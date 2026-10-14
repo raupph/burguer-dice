@@ -1,21 +1,17 @@
-#ifndef STACK_HPP
-#define STACK_HPP
+#ifndef PILHA_HPP
+#define PILHA_HPP
 
-typedef struct {
-    int code;
-    char name[50];
-    float price;
-} Product;
+#include "produto.hpp"
 
-typedef struct str_Node Node;
+typedef struct str_NodoPilha NodoPilha;
 
-struct str_Node {
-    Node *next;
-    Product data;
+struct str_NodoPilha {
+    NodoPilha *next;
+    Product    data;
 };
 
 typedef struct {
-    Node *top;
+    NodoPilha *top;
 } LinkedStack;
 
 void initialize(LinkedStack *stack);

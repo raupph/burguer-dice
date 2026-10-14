@@ -1,25 +1,24 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include "queue.hpp"
+#include "fila.hpp"
 
 void initialize(LinkedQueue *queue) {
-    queue->front = NULL;
-    queue->back = NULL;
+    queue->front = nullptr;
+    queue->back  = nullptr;
 }
 
 int isEmpty(LinkedQueue *queue) {
-    return queue->front == NULL;
+    return queue->front == nullptr;
 }
 
 int enqueue(LinkedQueue *queue, Product value) {
-    Node *newNode = (Node*) malloc(sizeof(Node));
-    if (newNode == NULL)
+    NodoFila *newNode = (NodoFila*) malloc(sizeof(NodoFila));
+    if (newNode == nullptr)
         return 0;
 
     newNode->data = value;
-    newNode->next = NULL;
+    newNode->next = nullptr;
 
-    if (queue->back != NULL)
+    if (queue->back != nullptr)
         queue->back->next = newNode; // the old back now points to the new node
     else
         queue->front = newNode;      // the queue was empty: new node is also the front
@@ -29,7 +28,7 @@ int enqueue(LinkedQueue *queue, Product value) {
 }
 
 int dequeue(LinkedQueue *queue, Product *removedValue) {
-    Node *removed;
+    NodoFila *removed;
 
     if (isEmpty(queue)) // underflow
         return 0;
@@ -38,18 +37,18 @@ int dequeue(LinkedQueue *queue, Product *removedValue) {
     *removedValue = removed->data;
     queue->front = removed->next;
 
-    if (queue->front == NULL) // the queue became empty
-        queue->back = NULL;
+    if (queue->front == nullptr) // the queue became empty
+        queue->back = nullptr;
 
     free(removed);
     return 1;
 }
 
 int size(LinkedQueue *queue) {
-    Node *current = queue->front;
+    NodoFila *current = queue->front;
     int count = 0;
 
-    while (current != NULL) {
+    while (current != nullptr) {
         count++;
         current = current->next;
     }

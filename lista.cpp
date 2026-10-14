@@ -1,16 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "list.hpp"
+#include "lista.hpp"
 
 void initialize(LinkedList *list) {
-    list->head = NULL;
+    list->head = nullptr;
 }
 
 int size(const LinkedList *list) {
-    Node *current = list->head;
+    NodoLista *current = list->head;
     int count = 0;
 
-    while (current != NULL) {
+    while (current != nullptr) {
         count++;
         current = current->next;
     }
@@ -19,9 +19,9 @@ int size(const LinkedList *list) {
 }
 
 void print(const LinkedList *list) {
-    Node *current = list->head;
+    NodoLista *current = list->head;
 
-    while (current != NULL) {
+    while (current != nullptr) {
         printf("Code: %d\n", current->data.code);
         printf("Name: %s\n", current->data.name);
         printf("Price: %f\n", current->data.price);
@@ -30,11 +30,11 @@ void print(const LinkedList *list) {
 }
 
 Product find(const LinkedList *list, int code) {
-    Node *current;
+    NodoLista *current;
     Product product = {0, "", 0.0f};
     current = list->head;
 
-    while (current != NULL) {
+    while (current != nullptr) {
         if (current->data.code == code)
             return current->data;
         current = current->next;
@@ -44,8 +44,8 @@ Product find(const LinkedList *list, int code) {
 }
 
 int insertAtBeginning(LinkedList *list, Product product) {
-    Node *newNode = (Node*) malloc(sizeof(Node));
-    if (newNode == NULL)
+    NodoLista *newNode = (NodoLista*) malloc(sizeof(NodoLista));
+    if (newNode == nullptr)
         return 0; // allocation failure
 
     newNode->data = product;
@@ -56,21 +56,21 @@ int insertAtBeginning(LinkedList *list, Product product) {
 }
 
 int insertAtEnd(LinkedList *list, Product product) {
-    Node *newNode;
-    Node *current;
+    NodoLista *newNode;
+    NodoLista *current;
 
-    newNode = (Node*) malloc(sizeof(Node));
-    if (newNode == NULL)
+    newNode = (NodoLista*) malloc(sizeof(NodoLista));
+    if (newNode == nullptr)
         return 0;
 
     newNode->data = product;
-    newNode->next = NULL;
+    newNode->next = nullptr;
 
-    if (list->head == NULL) { // empty list: the new node is also the head
+    if (list->head == nullptr) { // empty list: the new node is also the head
         list->head = newNode;
     } else {
         current = list->head;
-        while (current->next != NULL) // walk to the last node
+        while (current->next != nullptr) // walk to the last node
             current = current->next;
         current->next = newNode;
     }
@@ -79,23 +79,23 @@ int insertAtEnd(LinkedList *list, Product product) {
 }
 
 int removeByCode(LinkedList *list, int code) {
-    Node *previous;
-    Node *current;
+    NodoLista *previous;
+    NodoLista *current;
 
-    previous = NULL;
+    previous = nullptr;
     current = list->head;
 
-    while (current != NULL && current->data.code != code) {
+    while (current != nullptr && current->data.code != code) {
         previous = current;
         current = current->next;
     }
 
-    if (current == NULL) // not found
+    if (current == nullptr) // not found
         return 0;
 
-    if (previous == NULL) // removing the first node
+    if (previous == nullptr) // removing the first node
         list->head = current->next;
-    else                  // removing from the middle or the end
+    else                     // removing from the middle or the end
         previous->next = current->next;
 
     free(current);
@@ -103,15 +103,15 @@ int removeByCode(LinkedList *list, int code) {
 }
 
 void destroy(LinkedList *list) {
-    Node *previous;
-    Node *current;
+    NodoLista *previous;
+    NodoLista *current;
     current = list->head;
 
-    while (current != NULL) {
+    while (current != nullptr) {
         previous = current;
         current = current->next;
         free(previous);
     }
 
-    list->head = NULL;
+    list->head = nullptr;
 }

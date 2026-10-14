@@ -1,21 +1,17 @@
-#ifndef LIST_HPP
-#define LIST_HPP
+#ifndef LISTA_HPP
+#define LISTA_HPP
 
-typedef struct {
-    int code;
-    char name[50];
-    float price;
-} Product;
+#include "produto.hpp"
 
-typedef struct str_Node Node;
+typedef struct str_NodoLista NodoLista;
 
-struct str_Node {
-    Node *next;
-    Product data;
+struct str_NodoLista {
+    NodoLista *next;
+    Product    data;
 };
 
 typedef struct {
-    Node *head;
+    NodoLista *head;
 } LinkedList;
 
 void    initialize(LinkedList *list);

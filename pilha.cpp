@@ -1,18 +1,17 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include "stack.hpp"
+#include "pilha.hpp"
 
 void initialize(LinkedStack *stack) {
-    stack->top = NULL;
+    stack->top = nullptr;
 }
 
 int isEmpty(LinkedStack *stack) {
-    return stack->top == NULL;
+    return stack->top == nullptr;
 }
 
 int push(LinkedStack *stack, Product value) {
-    Node *newNode = (Node*) malloc(sizeof(Node));
-    if (newNode == NULL)
+    NodoPilha *newNode = (NodoPilha*) malloc(sizeof(NodoPilha));
+    if (newNode == nullptr)
         return 0;
 
     newNode->data = value;
@@ -22,7 +21,7 @@ int push(LinkedStack *stack, Product value) {
 }
 
 int pop(LinkedStack *stack, Product *removedValue) {
-    Node *removed;
+    NodoPilha *removed;
 
     if (isEmpty(stack)) // underflow
         return 0;
@@ -43,10 +42,10 @@ int peek(LinkedStack *stack, Product *value) {
 }
 
 int size(LinkedStack *stack) {
-    Node *current = stack->top;
+    NodoPilha *current = stack->top;
     int count = 0;
 
-    while (current != NULL) {
+    while (current != nullptr) {
         count++;
         current = current->next;
     }

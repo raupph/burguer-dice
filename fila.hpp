@@ -1,22 +1,18 @@
-#ifndef QUEUE_HPP
-#define QUEUE_HPP
+#ifndef FILA_HPP
+#define FILA_HPP
 
-typedef struct {
-    int code;
-    char name[50];
-    float price;
-} Product;
+#include "produto.hpp"
 
-typedef struct str_Node Node;
+typedef struct str_NodoFila NodoFila;
 
-struct str_Node {
-    Node *next;
-    Product data;
+struct str_NodoFila {
+    NodoFila *next;
+    Product   data;
 };
 
 typedef struct {
-    Node *front;
-    Node *back;
+    NodoFila *front;
+    NodoFila *back;
 } LinkedQueue;
 
 void initialize(LinkedQueue *queue);
