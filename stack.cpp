@@ -2,54 +2,54 @@
 #include <stdlib.h>
 #include "stack.hpp"
 
-void inicializa(PilhaEnc *p) {
-    p->topo = NULL;
+void initialize(LinkedStack *stack) {
+    stack->top = NULL;
 }
 
-int estaVazia(PilhaEnc *p) {
-    return p->topo == NULL;
+int isEmpty(LinkedStack *stack) {
+    return stack->top == NULL;
 }
 
-int empilha(PilhaEnc *p, Produto valor) {
-    Nodo *novo = (Nodo*) malloc(sizeof(Nodo));
-    if (novo == NULL)
+int push(LinkedStack *stack, Product value) {
+    Node *newNode = (Node*) malloc(sizeof(Node));
+    if (newNode == NULL)
         return 0;
 
-    novo->dado = valor;
-    novo->prox = p->topo; // aponta para o antigo topo
-    p->topo = novo;        // o novo nodo passa a ser o topo
+    newNode->data = value;
+    newNode->next = stack->top; // points to the previous top
+    stack->top = newNode;        // the new node becomes the top
     return 1;
 }
 
-int desempilha(PilhaEnc *p, Produto *valorRemovido) {
-    Nodo *removido;
+int pop(LinkedStack *stack, Product *removedValue) {
+    Node *removed;
 
-    if (estaVazia(p)) // underflow
+    if (isEmpty(stack)) // underflow
         return 0;
 
-    removido = p->topo;
-    *valorRemovido = removido->dado;
-    p->topo = removido->prox;
-    free(removido);
+    removed = stack->top;
+    *removedValue = removed->data;
+    stack->top = removed->next;
+    free(removed);
     return 1;
 }
 
-int topo(PilhaEnc *p, Produto *valor) {
-    if (estaVazia(p))
+int peek(LinkedStack *stack, Product *value) {
+    if (isEmpty(stack))
         return 0;
 
-    *valor = p->topo->dado;
+    *value = stack->top->data;
     return 1;
 }
 
-int tamanho(PilhaEnc *p) {
-    Nodo *aux = p->topo;
-    int contador = 0;
+int size(LinkedStack *stack) {
+    Node *current = stack->top;
+    int count = 0;
 
-    while (aux != NULL) {
-        contador++;
-        aux = aux->prox;
+    while (current != NULL) {
+        count++;
+        current = current->next;
     }
 
-    return contador;
+    return count;
 }

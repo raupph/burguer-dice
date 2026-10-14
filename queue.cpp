@@ -2,57 +2,57 @@
 #include <stdlib.h>
 #include "queue.hpp"
 
-void inicializa(FilaEnc *f) {
-    f->frente = NULL;
-    f->final = NULL;
+void initialize(LinkedQueue *queue) {
+    queue->front = NULL;
+    queue->back = NULL;
 }
 
-int estaVazia(FilaEnc *f) {
-    return f->frente == NULL;
+int isEmpty(LinkedQueue *queue) {
+    return queue->front == NULL;
 }
 
-int enfileira(FilaEnc *f, Produto valor) {
-    Nodo *novo = (Nodo*) malloc(sizeof(Nodo));
-    if (novo == NULL)
+int enqueue(LinkedQueue *queue, Product value) {
+    Node *newNode = (Node*) malloc(sizeof(Node));
+    if (newNode == NULL)
         return 0;
 
-    novo->dado = valor;
-    novo->prox = NULL;
+    newNode->data = value;
+    newNode->next = NULL;
 
-    if (f->final != NULL)
-        f->final->prox = novo; // o antigo final passa a apontar para o novo nodo
+    if (queue->back != NULL)
+        queue->back->next = newNode; // the old back now points to the new node
     else
-        f->frente = novo;      // fila estava vazia: novo nodo também é a frente
+        queue->front = newNode;      // the queue was empty: new node is also the front
 
-    f->final = novo;
+    queue->back = newNode;
     return 1;
 }
 
-int desenfileira(FilaEnc *f, Produto *valorRemovido) {
-    Nodo *removido;
+int dequeue(LinkedQueue *queue, Product *removedValue) {
+    Node *removed;
 
-    if (estaVazia(f)) // underflow
+    if (isEmpty(queue)) // underflow
         return 0;
 
-    removido = f->frente;
-    *valorRemovido = removido->dado;
-    f->frente = removido->prox;
+    removed = queue->front;
+    *removedValue = removed->data;
+    queue->front = removed->next;
 
-    if (f->frente == NULL) // a fila ficou vazia
-        f->final = NULL;
+    if (queue->front == NULL) // the queue became empty
+        queue->back = NULL;
 
-    free(removido);
+    free(removed);
     return 1;
 }
 
-int tamanho(FilaEnc *f) {
-    Nodo *aux = f->frente;
-    int contador = 0;
+int size(LinkedQueue *queue) {
+    Node *current = queue->front;
+    int count = 0;
 
-    while (aux != NULL) {
-        contador++;
-        aux = aux->prox;
+    while (current != NULL) {
+        count++;
+        current = current->next;
     }
 
-    return contador;
+    return count;
 }

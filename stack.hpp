@@ -2,27 +2,27 @@
 #define STACK_HPP
 
 typedef struct {
-    int cod;
-    char nome[50];
-    float preco;
-} Produto;
+    int code;
+    char name[50];
+    float price;
+} Product;
 
-typedef struct str_Nodo Nodo;
+typedef struct str_Node Node;
 
-struct str_Nodo {
-    Nodo *prox;
-    Produto dado;
+struct str_Node {
+    Node *next;
+    Product data;
 };
 
 typedef struct {
-    Nodo *topo;
-} PilhaEnc;
+    Node *top;
+} LinkedStack;
 
-void inicializa(PilhaEnc *p);
-int  estaVazia(PilhaEnc *p);
-int  empilha(PilhaEnc *p, Produto valor);
-int  desempilha(PilhaEnc *p, Produto *valorRemovido);
-int  topo(PilhaEnc *p, Produto *valor);
-int  tamanho(PilhaEnc *p);
+void initialize(LinkedStack *stack);
+int  isEmpty(LinkedStack *stack);
+int  push(LinkedStack *stack, Product value);
+int  pop(LinkedStack *stack, Product *removedValue);
+int  peek(LinkedStack *stack, Product *value);
+int  size(LinkedStack *stack);
 
 #endif

@@ -2,29 +2,29 @@
 #define LIST_HPP
 
 typedef struct {
-    int cod;
-    char nome[50];
-    float preco;
-} Produto;
+    int code;
+    char name[50];
+    float price;
+} Product;
 
-typedef struct str_Nodo Nodo;
+typedef struct str_Node Node;
 
-struct str_Nodo {
-    Nodo *prox;
-    Produto dado;
+struct str_Node {
+    Node *next;
+    Product data;
 };
 
 typedef struct {
-    Nodo *ini;
-} ListaEnc;
+    Node *head;
+} LinkedList;
 
-void    inicializar(ListaEnc *lista);
-void    imprimir(const ListaEnc *lista);
-Produto buscar(const ListaEnc *lista, int cod);
-int     inserirInicio(ListaEnc *lista, Produto prod);
-int     inserirFim(ListaEnc *lista, Produto prod);
-int     removerPorCod(ListaEnc *lista, int cod);
-void    destruir(ListaEnc *lista);
-int     tamanho(const ListaEnc *lista);
+void    initialize(LinkedList *list);
+void    print(const LinkedList *list);
+Product find(const LinkedList *list, int code);
+int     insertAtBeginning(LinkedList *list, Product product);
+int     insertAtEnd(LinkedList *list, Product product);
+int     removeByCode(LinkedList *list, int code);
+void    destroy(LinkedList *list);
+int     size(const LinkedList *list);
 
 #endif

@@ -2,117 +2,116 @@
 #include <stdlib.h>
 #include "list.hpp"
 
-void inicializar(ListaEnc *lista) {
-    lista->ini = NULL;
+void initialize(LinkedList *list) {
+    list->head = NULL;
 }
 
-int tamanho(const ListaEnc *lista) {
-    Nodo *aux = lista->ini;
-    int contador = 0;
+int size(const LinkedList *list) {
+    Node *current = list->head;
+    int count = 0;
 
-    while (aux != NULL) {
-        contador++;
-        aux = aux->prox;
+    while (current != NULL) {
+        count++;
+        current = current->next;
     }
 
-    return contador;
+    return count;
 }
 
-void imprimir(const ListaEnc *lista) {
-    Nodo *aux;
-    aux = lista->ini;
+void print(const LinkedList *list) {
+    Node *current = list->head;
 
-    while (aux != NULL) {
-        printf("Codigo: %d\n", aux->dado.cod);
-        printf("Nome: %s\n", aux->dado.nome);
-        printf("Preco: %f\n", aux->dado.preco);
-        aux = aux->prox;
+    while (current != NULL) {
+        printf("Code: %d\n", current->data.code);
+        printf("Name: %s\n", current->data.name);
+        printf("Price: %f\n", current->data.price);
+        current = current->next;
     }
 }
 
-Produto buscar(const ListaEnc *lista, int cod) {
-    Nodo *aux;
-    Produto prod = {0, "", 0.0f};
-    aux = lista->ini;
+Product find(const LinkedList *list, int code) {
+    Node *current;
+    Product product = {0, "", 0.0f};
+    current = list->head;
 
-    while (aux != NULL) {
-        if (aux->dado.cod == cod)
-            return aux->dado;
-        aux = aux->prox;
+    while (current != NULL) {
+        if (current->data.code == code)
+            return current->data;
+        current = current->next;
     }
 
-    return prod; // não encontrado: produto "vazio"
+    return product; // not found: empty product
 }
 
-int inserirInicio(ListaEnc *lista, Produto prod) {
-    Nodo *novo = (Nodo*) malloc(sizeof(Nodo));
-    if (novo == NULL)
-        return 0; // falha na alocação
+int insertAtBeginning(LinkedList *list, Product product) {
+    Node *newNode = (Node*) malloc(sizeof(Node));
+    if (newNode == NULL)
+        return 0; // allocation failure
 
-    novo->dado = prod;
-    novo->prox = lista->ini; // o novo nodo aponta para o antigo início
-    lista->ini = novo;        // o novo nodo passa a ser o início
+    newNode->data = product;
+    newNode->next = list->head; // the new node points to the previous head
+    list->head = newNode;        // the new node becomes the head
 
     return 1;
 }
 
-int inserirFim(ListaEnc *lista, Produto prod) {
-    Nodo *novo;
-    Nodo *aux;
+int insertAtEnd(LinkedList *list, Product product) {
+    Node *newNode;
+    Node *current;
 
-    novo = (Nodo*) malloc(sizeof(Nodo));
-    if (novo == NULL)
+    newNode = (Node*) malloc(sizeof(Node));
+    if (newNode == NULL)
         return 0;
 
-    novo->dado = prod;
-    novo->prox = NULL;
+    newNode->data = product;
+    newNode->next = NULL;
 
-    if (lista->ini == NULL) { // lista vazia: o novo nodo é o único (e o início)
-        lista->ini = novo;
+    if (list->head == NULL) { // empty list: the new node is also the head
+        list->head = newNode;
     } else {
-        aux = lista->ini;
-        while (aux->prox != NULL) // percorre até o último nodo
-            aux = aux->prox;
-        aux->prox = novo;
+        current = list->head;
+        while (current->next != NULL) // walk to the last node
+            current = current->next;
+        current->next = newNode;
     }
 
     return 1;
 }
 
-int removerPorCod(ListaEnc *lista, int cod) {
-    Nodo *ant;
-    Nodo *aux;
+int removeByCode(LinkedList *list, int code) {
+    Node *previous;
+    Node *current;
 
-    ant = NULL;
-    aux = lista->ini;
+    previous = NULL;
+    current = list->head;
 
-    while (aux != NULL && aux->dado.cod != cod) {
-        ant = aux;
-        aux = aux->prox;
+    while (current != NULL && current->data.code != code) {
+        previous = current;
+        current = current->next;
     }
 
-    if (aux == NULL) // não encontrado
+    if (current == NULL) // not found
         return 0;
 
-    if (ant == NULL) // removendo o primeiro nodo
-        lista->ini = aux->prox;
-    else             // removendo do meio ou do final
-        ant->prox = aux->prox;
+    if (previous == NULL) // removing the first node
+        list->head = current->next;
+    else                  // removing from the middle or the end
+        previous->next = current->next;
 
-    free(aux);
+    free(current);
     return 1;
 }
 
-void destruir(ListaEnc *lista) {
-    Nodo *ant;
-    Nodo *aux;
-    aux = lista->ini;
+void destroy(LinkedList *list) {
+    Node *previous;
+    Node *current;
+    current = list->head;
 
-    while (aux != NULL) {
-        ant = aux;
-        aux = aux->prox;
-        free(ant);
+    while (current != NULL) {
+        previous = current;
+        current = current->next;
+        free(previous);
     }
 
-    lista->ini = NULL;
+    list->head = NULL;
 }

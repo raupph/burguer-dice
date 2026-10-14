@@ -1,11 +1,11 @@
 #include "timer.hpp"
 
-void timer_iniciar(Timer *t)
+void timerStart(Timer *timer)
 {
-    t->inicio = std::chrono::steady_clock::now();
+    timer->start = std::chrono::steady_clock::now();
 }
-double timer_parar(Timer *t)
+double timerStop(Timer *timer)
 {
     auto fim = std::chrono::steady_clock::now();
-    return std::chrono::duration<double>(fim - t->inicio).count();
+    return std::chrono::duration<double>(fim - timer->start).count();
 }

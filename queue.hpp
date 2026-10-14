@@ -2,27 +2,27 @@
 #define QUEUE_HPP
 
 typedef struct {
-    int cod;
-    char nome[50];
-    float preco;
-} Produto;
+    int code;
+    char name[50];
+    float price;
+} Product;
 
-typedef struct str_Nodo Nodo;
+typedef struct str_Node Node;
 
-struct str_Nodo {
-    Nodo *prox;
-    Produto dado;
+struct str_Node {
+    Node *next;
+    Product data;
 };
 
 typedef struct {
-    Nodo *frente;
-    Nodo *final;
-} FilaEnc;
+    Node *front;
+    Node *back;
+} LinkedQueue;
 
-void inicializa(FilaEnc *f);
-int  estaVazia(FilaEnc *f);
-int  enfileira(FilaEnc *f, Produto valor);
-int  desenfileira(FilaEnc *f, Produto *valorRemovido);
-int  tamanho(FilaEnc *f);
+void initialize(LinkedQueue *queue);
+int  isEmpty(LinkedQueue *queue);
+int  enqueue(LinkedQueue *queue, Product value);
+int  dequeue(LinkedQueue *queue, Product *removedValue);
+int  size(LinkedQueue *queue);
 
 #endif
