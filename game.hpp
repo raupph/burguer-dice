@@ -1,8 +1,8 @@
 #ifndef PRODUTO_HPP
 #define PRODUTO_HPP
 
-#include "pilha.hpp"
 #include "lista.hpp"
+#include "pilha.hpp"
 
 typedef struct {
     int code;

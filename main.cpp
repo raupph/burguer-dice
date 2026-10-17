@@ -8,6 +8,10 @@
 #include "heap.hpp"
 #include "timer.hpp"
 #include "game.hpp"
+#include "lista.hpp"
+
+using namespace std;
+
 
 int main(int argc, char *argv[]) {
 
@@ -22,7 +26,11 @@ int main(int argc, char *argv[]) {
 
             case INIT_ORDER:
             
-            while(game.recipe )
+            list_initialize(&game.recipe);
+            list_insertAtEnd(&game.recipe, 'k'); // Ketchup 
+            list_insertAtEnd(&game.recipe, 'a'); // Alface 
+            list_insertAtEnd(&game.recipe, 'q'); // Queijo 
+            list_insertAtEnd(&game.recipe, 'z'); // Pão de cima
 
                 break;
 

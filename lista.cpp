@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include "lista.hpp"
 
-void initialize(LinkedList *list) {
-    list->head = nullptr;
+void list_initialize(LinkedList *list) {
+    list->head->ingredient = 'p';
+    list->head->next = nullptr;
 }
 
 // int size(const LinkedList *list) {
@@ -55,28 +56,28 @@ void initialize(LinkedList *list) {
 //     return 1;
 // }
 
-// int insertAtEnd(LinkedList *list, Product product) {
-//     NodoLista *newNode;
-//     NodoLista *current;
+int list_insertAtEnd(LinkedList *list, char ingredient) {
+    NodoLista *newNode;
+    NodoLista *current;
 
-//     newNode = (NodoLista*) malloc(sizeof(NodoLista));
-//     if (newNode == nullptr)
-//         return 0;
+    newNode = (NodoLista*) malloc(sizeof(NodoLista));
+    if (newNode == nullptr)
+        return 0;
 
-//     newNode->data = product;
-//     newNode->next = nullptr;
+    newNode->ingredient = ingredient;
+    newNode->next = nullptr;
 
-//     if (list->head == nullptr) { // empty list: the new node is also the head
-//         list->head = newNode;
-//     } else {
-//         current = list->head;
-//         while (current->next != nullptr) // walk to the last node
-//             current = current->next;
-//         current->next = newNode;
-//     }
+    if (list->head == nullptr) { // empty list: the new node is also the head
+        list->head = newNode;
+    } else {
+        current = list->head;
+        while (current->next != nullptr) // walk to the last node
+            current = current->next;
+        current->next = newNode;
+    }
 
-//     return 1;
-// }
+    return 1;
+}
 
 // int removeByCode(LinkedList *list, int code) {
 //     NodoLista *previous;
@@ -102,16 +103,16 @@ void initialize(LinkedList *list) {
 //     return 1;
 // }
 
-// void destroy(LinkedList *list) {
-//     NodoLista *previous;
-//     NodoLista *current;
-//     current = list->head;
+void list_destroy(LinkedList *list) {
+    NodoLista *previous;
+    NodoLista *current;
+    current = list->head;
 
-//     while (current != nullptr) {
-//         previous = current;
-//         current = current->next;
-//         free(previous);
-//     }
+    while (current != nullptr) {
+        previous = current;
+        current = current->next;
+        free(previous);
+    }
 
-//     list->head = nullptr;
-// }
+    list->head = nullptr;
+}
