@@ -1,7 +1,7 @@
 #ifndef PILHA_HPP
 #define PILHA_HPP
 
-#include "produto.hpp"
+#include "game.hpp"
 
 typedef struct str_NodoPilha NodoPilha;
 
