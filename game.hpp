@@ -1,37 +1,28 @@
-#ifndef PRODUTO_HPP
-#define PRODUTO_HPP
+#ifndef GAME_HPP
+#define GAME_HPP
 
-#include "lista.hpp"
 #include "pilha.hpp"
-
-typedef struct {
-    int code;
-    char name[50];
-    float price;
-} Product;
+#include "lista.hpp"
 
 typedef enum {
-    INIT_ORDER, 
-    WAIT_ACTION, 
-    ADD_INGREDIENT, 
-    REMOVE_INGREDIENT, 
-    VALIDATE_ORDER, 
-    ORDER_SUCCESS,
-    GAME_OVER
+    STATE_INIT_ORDER,
+    STATE_WAIT_ACTION,
+    STATE_ADD_INGREDIENT,
+    STATE_REMOVE_INGREDIENT,
+    STATE_VALIDATE_ORDER,
+    STATE_ORDER_SUCCESS,
+    STATE_GAME_OVER
 } GameState;
 
-typedef struct{
-
+struct Game {
     GameState state;
-    LinkedStack burger;
-    LinkedList recipe;
-
+    Pilha burger;
+    Lista recipe;
     int current_turn;
     int current_patience;
-    int saved_costumers;
+    int served_customers;
     bool is_running;
-
-} Game;
+};
 
 void game_init(Game* g);
 bool game_add_ingredient(Game* g, char ingredient);

@@ -6,16 +6,16 @@ struct NodoPilha {
     char ingredient;
 };
 
-struct LinkedStack {
+struct Pilha {
     NodoPilha* top;
 };
 
-void stack_initialize(LinkedStack* stack);
-int  stack_isEmpty(const LinkedStack* stack);
-int  stack_push(LinkedStack* stack, char ingredient);
-int  stack_pop(LinkedStack* stack, char* removedValue);
-int  stack_peek(const LinkedStack* stack, char* value);
-int  stack_size(const LinkedStack* stack);
-void stack_destroy(LinkedStack* stack);
+void stack_initialize(Pilha* stack);
+// int  stack_isEmpty(const Pilha* stack);
+// int  stack_push(Pilha* stack, char ingredient);
+// int  stack_pop(Pilha* stack, char* removedValue);
+// int  stack_peek(const Pilha* stack, char* value);
+// int  stack_size(const Pilha* stack);
+// void stack_destroy(Pilha* stack);
 
 #endif

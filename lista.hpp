@@ -6,17 +6,17 @@ struct NodoLista {
     char ingredient;
 };
 
-struct LinkedList{
+struct Lista{
     NodoLista *head;
 };
 
-void list_initialize(LinkedList *list);
+void list_initialize(Lista *list);
 // void    print(const LinkedList *list);
 // Product find(const LinkedList *list, int code);
 // int     insertAtBeginning(LinkedList *list, Product product);
-int list_insertAtEnd(LinkedList *list, char ingredient);
+int list_insertAtEnd(Lista *list, char ingredient);
 // int     removeByCode(LinkedList *list, int code);
-void list_destroy(LinkedList *list);
+void list_destroy(Lista *list);
 // int     size(const LinkedList *list);
 
 #endif

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "pilha.hpp"
 
-void initialize(LinkedStack *stack) {
+void stack_initialize(Pilha *stack) {
     stack->top = nullptr;
 }
 
