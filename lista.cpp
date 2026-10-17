@@ -2,9 +2,8 @@
 #include <stdlib.h>
 #include "lista.hpp"
 
-void list_initialize(LinkedList *list) {
-    list->head->ingredient = 'p';
-    list->head->next = nullptr;
+void list_initialize(Lista *list) {
+    list->head = nullptr;
 }
 
 // int size(const LinkedList *list) {
@@ -56,7 +55,7 @@ void list_initialize(LinkedList *list) {
 //     return 1;
 // }
 
-int list_insertAtEnd(LinkedList *list, char ingredient) {
+int list_insertAtEnd(Lista *list, char ingredient) {
     NodoLista *newNode;
     NodoLista *current;
 
@@ -103,7 +102,7 @@ int list_insertAtEnd(LinkedList *list, char ingredient) {
 //     return 1;
 // }
 
-void list_destroy(LinkedList *list) {
+void list_destroy(Lista *list) {
     NodoLista *previous;
     NodoLista *current;
     current = list->head;

@@ -7,8 +7,10 @@ struct NodoPilha {
 };
 
 struct Pilha {
-    NodoPilha* top;
+    struct NodoPilha* top;
 };
+
+//typedef struct Pilha Stack;
 
 void stack_initialize(Pilha* stack);
 // int  stack_isEmpty(const Pilha* stack);

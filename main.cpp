@@ -13,7 +13,7 @@
 using namespace std;
 
 
-int main(int argc, char *argv[]) {
+int main() {
 
     Game game;
     int option = 0;
@@ -21,10 +21,10 @@ int main(int argc, char *argv[]) {
 
     game_init(&game);
 
-    while (game.state != GAME_OVER) {
+    while (game.state != STATE_GAME_OVER) {
         switch (game.state) {
 
-            case INIT_ORDER:
+            case STATE_INIT_ORDER:
             
             list_initialize(&game.recipe);
             list_insertAtEnd(&game.recipe, 'k'); // Ketchup 
@@ -34,27 +34,27 @@ int main(int argc, char *argv[]) {
 
                 break;
 
-            case WAIT_ACTION:
+            case STATE_WAIT_ACTION:
                 // TODO: Exibir o estado da bancada e ler a acao do jogador
                 break;
 
-            case ADD_INGREDIENT:
+            case STATE_ADD_INGREDIENT:
                 // TODO: Processar a adicao de um ingrediente na pilha
                 break;
 
-            case REMOVE_INGREDIENT:
+            case STATE_REMOVE_INGREDIENT:
                 // TODO: Processar a remocao do ingrediente do topo
                 break;
 
-            case VALIDATE_ORDER:
+            case STATE_VALIDATE_ORDER:
                 // TODO: Validar se a pilha do hamburguer bate com a receita
                 break;
 
-            case ORDER_SUCCESS:
+            case STATE_ORDER_SUCCESS:
                 // TODO: Tratar sucesso da entrega e chamar proximo cliente
                 break;
 
-            case GAME_OVER:
+            case STATE_GAME_OVER:
                 // TODO: Exibir tela de encerramento do jogo
                 break;
 

@@ -1,7 +1,7 @@
 #ifndef AVL_HPP
 #define AVL_HPP
 
-#include "game.hpp"
+#include "product.hpp"
 
 typedef struct str_NodoAVL NodoAVL;
 

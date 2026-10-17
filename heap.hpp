@@ -1,7 +1,7 @@
 #ifndef HEAP_HPP
 #define HEAP_HPP
 
-#include "game.hpp"
+#include "product.hpp"
 
 #define HEAP_MAX 100
 

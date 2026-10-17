@@ -1,7 +1,7 @@
 #ifndef FILA_HPP
 #define FILA_HPP
 
-#include "game.hpp"
+#include "product.hpp"
 
 typedef struct str_NodoFila NodoFila;
 

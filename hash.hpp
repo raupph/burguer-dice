@@ -1,7 +1,7 @@
 #ifndef HASH_HPP
 #define HASH_HPP
 
-#include "game.hpp"
+#include "product.hpp"
 
 #define HASH_SIZE 100
 

@@ -5,11 +5,11 @@ void stack_initialize(Pilha *stack) {
     stack->top = nullptr;
 }
 
-// int isEmpty(LinkedStack *stack) {
+// int isEmpty(Stack *stack) {
 //     return stack->top == nullptr;
 // }
 
-// int push(LinkedStack *stack, Product value) {
+// int push(Stack *stack, Product value) {
 //     NodoPilha *newNode = (NodoPilha*) malloc(sizeof(NodoPilha));
 //     if (newNode == nullptr)
 //         return 0;
@@ -20,7 +20,7 @@ void stack_initialize(Pilha *stack) {
 //     return 1;
 // }
 
-// int pop(LinkedStack *stack, Product *removedValue) {
+// int pop(Stack *stack, Product *removedValue) {
 //     NodoPilha *removed;
 
 //     if (isEmpty(stack)) // underflow
@@ -33,7 +33,7 @@ void stack_initialize(Pilha *stack) {
 //     return 1;
 // }
 
-// int peek(LinkedStack *stack, Product *value) {
+// int peek(Stack *stack, Product *value) {
 //     if (isEmpty(stack))
 //         return 0;
 
@@ -41,7 +41,7 @@ void stack_initialize(Pilha *stack) {
 //     return 1;
 // }
 
-// int size(LinkedStack *stack) {
+// int size(Stack *stack) {
 //     NodoPilha *current = stack->top;
 //     int count = 0;
 
