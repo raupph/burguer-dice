@@ -1,24 +1,21 @@
 #ifndef PILHA_HPP
 #define PILHA_HPP
 
-#include "game.hpp"
-
-typedef struct str_NodoPilha NodoPilha;
-
-struct str_NodoPilha {
-    NodoPilha *next;
-    Product    data;
+struct NodoPilha {
+    NodoPilha* next;
+    char ingredient;
 };
 
-typedef struct {
-    NodoPilha *top;
-} LinkedStack;
+struct LinkedStack {
+    NodoPilha* top;
+};
 
-void initialize(LinkedStack *stack);
-int  isEmpty(LinkedStack *stack);
-int  push(LinkedStack *stack, Product value);
-int  pop(LinkedStack *stack, Product *removedValue);
-int  peek(LinkedStack *stack, Product *value);
-int  size(LinkedStack *stack);
+void stack_initialize(LinkedStack* stack);
+int  stack_isEmpty(const LinkedStack* stack);
+int  stack_push(LinkedStack* stack, char ingredient);
+int  stack_pop(LinkedStack* stack, char* removedValue);
+int  stack_peek(const LinkedStack* stack, char* value);
+int  stack_size(const LinkedStack* stack);
+void stack_destroy(LinkedStack* stack);
 
 #endif
