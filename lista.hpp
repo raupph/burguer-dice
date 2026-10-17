@@ -3,14 +3,14 @@
 
 struct NodoLista { 
     NodoLista* next; 
-    Product data;
+    char ingredient;
 };
 
 struct LinkedList{
     NodoLista *head;
 };
 
-// void    initialize(LinkedList *list);
+void    initialize(LinkedList *list);
 // void    print(const LinkedList *list);
 // Product find(const LinkedList *list, int code);
 // int     insertAtBeginning(LinkedList *list, Product product);
