@@ -3,6 +3,7 @@
 
 #include "pilha.hpp"
 #include "lista.hpp"
+#include "fila.hpp"
 
 typedef enum {
     STATE_INIT_ORDER,
@@ -29,5 +30,6 @@ bool game_add_ingredient(Game* g, char ingredient);
 bool game_remove_ingredient(Game* g);
 bool game_validate_order(Game* g);
 void game_destroy(Game* g);
+void game_print_burguer(Game *g);
 
 #endif

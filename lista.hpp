@@ -17,6 +17,6 @@ void list_initialize(Lista *list);
 int list_insertAtEnd(Lista *list, char ingredient);
 // int     removeByCode(LinkedList *list, int code);
 void list_destroy(Lista *list);
-// int     size(const LinkedList *list);
+int list_size(const Lista *list);
 
 #endif

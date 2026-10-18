@@ -4,19 +4,20 @@
 
 void list_initialize(Lista *list) {
     list->head = nullptr;
+    list_insertAtEnd(list, 'p');
 }
 
-// int size(const LinkedList *list) {
-//     NodoLista *current = list->head;
-//     int count = 0;
+int list_size(const Lista *list) {
+    NodoLista *current = list->head;
+    int count = 0;
 
-//     while (current != nullptr) {
-//         count++;
-//         current = current->next;
-//     }
+    while (current != nullptr) {
+        count++;
+        current = current->next;
+    }
 
-//     return count;
-// }
+    return count;
+}
 
 // void print(const LinkedList *list) {
 //     NodoLista *current = list->head;

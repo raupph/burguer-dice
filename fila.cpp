@@ -1,16 +1,16 @@
 #include <stdlib.h>
 #include "fila.hpp"
 
-void initialize(LinkedQueue *queue) {
+void queue_initialize(Fila *queue) {
     queue->front = nullptr;
     queue->back  = nullptr;
 }
 
-int isEmpty(LinkedQueue *queue) {
+int queue_isEmpty(Fila *queue) {
     return queue->front == nullptr;
 }
 
-int enqueue(LinkedQueue *queue, Product value) {
+int queue_enqueue(Fila *queue, char value) {
     NodoFila *newNode = (NodoFila*) malloc(sizeof(NodoFila));
     if (newNode == nullptr)
         return 0;
@@ -27,10 +27,10 @@ int enqueue(LinkedQueue *queue, Product value) {
     return 1;
 }
 
-int dequeue(LinkedQueue *queue, Product *removedValue) {
+int queue_dequeue(Fila *queue, char *removedValue) {
     NodoFila *removed;
 
-    if (isEmpty(queue)) // underflow
+    if (queue_isEmpty(queue)) // underflow
         return 0;
 
     removed = queue->front;
@@ -44,7 +44,7 @@ int dequeue(LinkedQueue *queue, Product *removedValue) {
     return 1;
 }
 
-int size(LinkedQueue *queue) {
+int queue_size(Fila *queue) {
     NodoFila *current = queue->front;
     int count = 0;
 

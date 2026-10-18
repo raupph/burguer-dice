@@ -13,11 +13,11 @@ struct Pilha {
 //typedef struct Pilha Stack;
 
 void stack_initialize(Pilha* stack);
-// int  stack_isEmpty(const Pilha* stack);
-// int  stack_push(Pilha* stack, char ingredient);
-// int  stack_pop(Pilha* stack, char* removedValue);
+int  stack_isEmpty(const Pilha* stack);
+int  stack_push(Pilha* stack, char ingredient);
+char  stack_pop(Pilha* stack);
 // int  stack_peek(const Pilha* stack, char* value);
 // int  stack_size(const Pilha* stack);
-// void stack_destroy(Pilha* stack);
+//void stack_destroy(Pilha* stack);
 
 #endif
