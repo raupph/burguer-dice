@@ -1,24 +1,32 @@
-#ifndef AVL_HPP
-#define AVL_HPP
+/* avl.h
+ * Arvore AVL: BST com balanceamento automatico por rotacoes.
+ * INF01203 - Estruturas de Dados - UFRGS
+ */
 
-#include "product.hpp"
+#ifndef AVL_H
+#define AVL_H
 
-typedef struct str_NodoAVL NodoAVL;
+/* ------------------------------------------------------------------ */
+/*  Estrutura de um nodo AVL                                            */
+/* ------------------------------------------------------------------ */
+typedef struct NodoAvl {
+    int            dado;
+    int            altura;
+    struct NodoAvl *esq;
+    struct NodoAvl *dir;
+} NodoAvl;
 
-struct str_NodoAVL {
-    NodoAVL *left;
-    NodoAVL *right;
-    int      height;
-    Product  data;
-};
+/* Altura e fator de balanceamento */
+int      avlAltura(const NodoAvl *n);
+int      avlFb(const NodoAvl *n);
 
-typedef struct {
-    NodoAVL *root;
-} AVL;
+/* Operacoes principais (retornam a nova raiz da subarvore) */
+NodoAvl *avlBuscar(NodoAvl *raiz, int dado);
+NodoAvl *avlInserir(NodoAvl *raiz, int dado);
+NodoAvl *avlRemover(NodoAvl *raiz, int dado);
+NodoAvl *avlDestruir(NodoAvl *raiz);
 
-void    initializeAVL(AVL *avl);
-int     insertAVL(AVL *avl, Product product);
-Product searchAVL(const AVL *avl, int code);
-void    destroyAVL(AVL *avl);
+/* Caminhamento em-ordem (imprime em ordem crescente) */
+void     avlEmOrdem(const NodoAvl *raiz);
 
-#endif
+#endif /* AVL_H */
