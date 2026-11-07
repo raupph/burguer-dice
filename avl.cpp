@@ -14,10 +14,10 @@
 /* ------------------------------------------------------------------ */
 static int maximo(int a, int b) { return a > b ? a : b; }
 
-static NodoAvl *criarNodo(int dado) {
+static NodoAvl *criarNodo(int code) {
     NodoAvl *n = (NodoAvl *) malloc(sizeof(NodoAvl));
     if (!n) return NULL;
-    n->dado   = dado;
+    n->recipe.code   = code;
     n->altura = 0;
     n->esq    = NULL;
     n->dir    = NULL;
@@ -114,19 +114,19 @@ static NodoAvl *reequilibrar(NodoAvl *raiz) {
 /* ------------------------------------------------------------------ */
 /*  Operacoes publicas                                                  */
 /* ------------------------------------------------------------------ */
-NodoAvl *avlBuscar(NodoAvl *raiz, int dado) {
+NodoAvl *avlBuscar(NodoAvl *raiz, int code) {
     if (!raiz)          return NULL;
-    if (dado < raiz->dado) return avlBuscar(raiz->esq, dado);
-    if (dado > raiz->dado) return avlBuscar(raiz->dir, dado);
+    if (code < raiz->recipe.code) return avlBuscar(raiz->esq, code);
+    if (code > raiz->recipe.code) return avlBuscar(raiz->dir, code);
     return raiz;
 }
 
-NodoAvl *avlInserir(NodoAvl *raiz, int dado) {
-    if (!raiz) return criarNodo(dado);
-    if (dado < raiz->dado)
-        raiz->esq = avlInserir(raiz->esq, dado);
-    else if (dado > raiz->dado)
-        raiz->dir = avlInserir(raiz->dir, dado);
+NodoAvl *avlInserir(NodoAvl *raiz, int code) {
+    if (!raiz) return criarNodo(code);
+    if (code < raiz->recipe.code)
+        raiz->esq = avlInserir(raiz->esq, code);
+    else if (code > raiz->recipe.code)
+        raiz->dir = avlInserir(raiz->dir, code);
     else
         return raiz; /* duplicatas ignoradas */
     return reequilibrar(raiz);
@@ -137,12 +137,12 @@ static NodoAvl *minimo(NodoAvl *n) {
     return n;
 }
 
-NodoAvl *avlRemover(NodoAvl *raiz, int dado) {
+NodoAvl *avlRemover(NodoAvl *raiz, int code) {
     if (!raiz) return NULL;
-    if (dado < raiz->dado) {
-        raiz->esq = avlRemover(raiz->esq, dado);
-    } else if (dado > raiz->dado) {
-        raiz->dir = avlRemover(raiz->dir, dado);
+    if (code < raiz->recipe.code) {
+        raiz->esq = avlRemover(raiz->esq, code);
+    } else if (code > raiz->recipe.code) {
+        raiz->dir = avlRemover(raiz->dir, code);
     } else {
         /* Nodo encontrado */
         if (!raiz->esq || !raiz->dir) {
@@ -152,8 +152,8 @@ NodoAvl *avlRemover(NodoAvl *raiz, int dado) {
         }
         /* Dois filhos: substitui pelo menor da subarvore direita */
         NodoAvl *suc = minimo(raiz->dir);
-        raiz->dado = suc->dado;
-        raiz->dir  = avlRemover(raiz->dir, suc->dado);
+        raiz->recipe.code = suc->recipe.code;
+        raiz->dir  = avlRemover(raiz->dir, suc->recipe.code);
     }
     return reequilibrar(raiz);
 }
@@ -169,6 +169,30 @@ NodoAvl *avlDestruir(NodoAvl *raiz) {
 void avlEmOrdem(const NodoAvl *raiz) {
     if (!raiz) return;
     avlEmOrdem(raiz->esq);
-    printf("%d(h%d) ", raiz->dado, raiz->altura);
+    printf("%d(h%d) ", raiz->recipe.code, raiz->altura);
     avlEmOrdem(raiz->dir);
+}
+
+/* ------------------------------------------------------------------ */
+/*  main de demonstracao                                                */
+/* ------------------------------------------------------------------ */
+int main(void) {
+    NodoAvl *raiz = NULL;
+    int chaves[] = {30, 20, 40, 10, 25, 35, 50};
+    int n = 7;
+
+    for (int i = 0; i < n; i++)
+        raiz = avlInserir(raiz, chaves[i]);
+
+    printf("Em-ordem apos insercoes: ");
+    avlEmOrdem(raiz);
+    printf("\nAltura da raiz: %d\n", avlAltura(raiz));
+
+    raiz = avlRemover(raiz, 20);
+    printf("Em-ordem apos remover 20: ");
+    avlEmOrdem(raiz);
+    printf("\n");
+
+    raiz = avlDestruir(raiz);
+    return 0;
 }

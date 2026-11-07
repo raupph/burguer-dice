@@ -25,6 +25,11 @@ struct Game {
     bool is_running;
 };
 
+struct Recipe{
+    int code;
+    std::string ingredients;
+};
+
 void game_init(Game* g);
 bool game_add_ingredient(Game* g, char ingredient);
 bool game_remove_ingredient(Game* g);

@@ -14,8 +14,8 @@
 using namespace std;
 
 
-int main() {
-
+int main(int argc, char* argv[]) {
+    
     Game game;
     int option = 0;
     char input_ingredient;

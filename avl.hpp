@@ -5,12 +5,14 @@
 
 #ifndef AVL_H
 #define AVL_H
+#include <iostream>
+#include <game.hpp>
 
 /* ------------------------------------------------------------------ */
 /*  Estrutura de um nodo AVL                                            */
 /* ------------------------------------------------------------------ */
 typedef struct NodoAvl {
-    int            dado;
+    Recipe recipe;
     int            altura;
     struct NodoAvl *esq;
     struct NodoAvl *dir;
@@ -21,9 +23,9 @@ int      avlAltura(const NodoAvl *n);
 int      avlFb(const NodoAvl *n);
 
 /* Operacoes principais (retornam a nova raiz da subarvore) */
-NodoAvl *avlBuscar(NodoAvl *raiz, int dado);
-NodoAvl *avlInserir(NodoAvl *raiz, int dado);
-NodoAvl *avlRemover(NodoAvl *raiz, int dado);
+NodoAvl *avlBuscar(NodoAvl *raiz, int code);
+NodoAvl *avlInserir(NodoAvl *raiz, int code);
+NodoAvl *avlRemover(NodoAvl *raiz, int code);
 NodoAvl *avlDestruir(NodoAvl *raiz);
 
 /* Caminhamento em-ordem (imprime em ordem crescente) */
