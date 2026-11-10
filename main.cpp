@@ -22,6 +22,8 @@ int main(int argc, char* argv[]) {
 
     game_init(&game);
 
+    
+
     while (game.state != STATE_GAME_OVER) {
         switch (game.state) {
 

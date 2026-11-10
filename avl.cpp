@@ -14,10 +14,11 @@
 /* ------------------------------------------------------------------ */
 static int maximo(int a, int b) { return a > b ? a : b; }
 
-static NodoAvl *criarNodo(int code) {
+static NodoAvl *criarNodo(Recipe r) {
     NodoAvl *n = (NodoAvl *) malloc(sizeof(NodoAvl));
     if (!n) return NULL;
-    n->recipe.code   = code;
+    n->recipe.code   = r.code;
+    n->recipe.ingredients = r.ingredients;
     n->altura = 0;
     n->esq    = NULL;
     n->dir    = NULL;
@@ -121,12 +122,12 @@ NodoAvl *avlBuscar(NodoAvl *raiz, int code) {
     return raiz;
 }
 
-NodoAvl *avlInserir(NodoAvl *raiz, int code) {
-    if (!raiz) return criarNodo(code);
-    if (code < raiz->recipe.code)
-        raiz->esq = avlInserir(raiz->esq, code);
-    else if (code > raiz->recipe.code)
-        raiz->dir = avlInserir(raiz->dir, code);
+NodoAvl *avlInserir(NodoAvl *raiz, Recipe r) {
+    if (!raiz) return criarNodo(r);
+    if (r.code < raiz->recipe.code)
+        raiz->esq = avlInserir(raiz->esq, r);
+    else if (r.code > raiz->recipe.code)
+        raiz->dir = avlInserir(raiz->dir, r);
     else
         return raiz; /* duplicatas ignoradas */
     return reequilibrar(raiz);
@@ -152,7 +153,7 @@ NodoAvl *avlRemover(NodoAvl *raiz, int code) {
         }
         /* Dois filhos: substitui pelo menor da subarvore direita */
         NodoAvl *suc = minimo(raiz->dir);
-        raiz->recipe.code = suc->recipe.code;
+        raiz->recipe = suc->recipe;
         raiz->dir  = avlRemover(raiz->dir, suc->recipe.code);
     }
     return reequilibrar(raiz);
@@ -178,11 +179,19 @@ void avlEmOrdem(const NodoAvl *raiz) {
 /* ------------------------------------------------------------------ */
 int main(void) {
     NodoAvl *raiz = NULL;
-    int chaves[] = {30, 20, 40, 10, 25, 35, 50};
+    Recipe receitas[] = {
+        {30, "pao,carne,queijo"},
+        {20, "pao,carne"},
+        {40, "pao,carne,bacon"},
+        {10, "pao,ovo"},
+        {25, "pao,carne,alface"},
+        {35, "pao,carne,tomate"},
+        {50, "pao,carne,queijo,bacon"}
+    };
     int n = 7;
 
     for (int i = 0; i < n; i++)
-        raiz = avlInserir(raiz, chaves[i]);
+        raiz = avlInserir(raiz, receitas[i]);
 
     printf("Em-ordem apos insercoes: ");
     avlEmOrdem(raiz);

@@ -4,6 +4,7 @@
 #include "pilha.hpp"
 #include "lista.hpp"
 #include "fila.hpp"
+#include <string>
 
 typedef enum {
     STATE_INIT_ORDER,
@@ -15,6 +16,13 @@ typedef enum {
     STATE_GAME_OVER
 } GameState;
 
+struct Recipe{
+    int code;
+    std::string ingredients;
+};
+
+struct NodoAvl;
+
 struct Game {
     GameState state;
     Pilha burger;
@@ -23,11 +31,7 @@ struct Game {
     int current_patience;
     int served_customers;
     bool is_running;
-};
-
-struct Recipe{
-    int code;
-    std::string ingredients;
+    NodoAvl *root_avl;
 };
 
 void game_init(Game* g);

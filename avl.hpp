@@ -5,8 +5,8 @@
 
 #ifndef AVL_H
 #define AVL_H
-#include <iostream>
-#include <game.hpp>
+#include <string>
+#include "game.hpp"
 
 /* ------------------------------------------------------------------ */
 /*  Estrutura de um nodo AVL                                            */
@@ -24,7 +24,7 @@ int      avlFb(const NodoAvl *n);
 
 /* Operacoes principais (retornam a nova raiz da subarvore) */
 NodoAvl *avlBuscar(NodoAvl *raiz, int code);
-NodoAvl *avlInserir(NodoAvl *raiz, int code);
+NodoAvl *avlInserir(NodoAvl *raiz, Recipe r);
 NodoAvl *avlRemover(NodoAvl *raiz, int code);
 NodoAvl *avlDestruir(NodoAvl *raiz);
 
