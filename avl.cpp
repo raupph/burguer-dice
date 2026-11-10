@@ -174,34 +174,4 @@ void avlEmOrdem(const NodoAvl *raiz) {
     avlEmOrdem(raiz->dir);
 }
 
-/* ------------------------------------------------------------------ */
-/*  main de demonstracao                                                */
-/* ------------------------------------------------------------------ */
-int main(void) {
-    NodoAvl *raiz = NULL;
-    Recipe receitas[] = {
-        {30, "pao,carne,queijo"},
-        {20, "pao,carne"},
-        {40, "pao,carne,bacon"},
-        {10, "pao,ovo"},
-        {25, "pao,carne,alface"},
-        {35, "pao,carne,tomate"},
-        {50, "pao,carne,queijo,bacon"}
-    };
-    int n = 7;
 
-    for (int i = 0; i < n; i++)
-        raiz = avlInserir(raiz, receitas[i]);
-
-    printf("Em-ordem apos insercoes: ");
-    avlEmOrdem(raiz);
-    printf("\nAltura da raiz: %d\n", avlAltura(raiz));
-
-    raiz = avlRemover(raiz, 20);
-    printf("Em-ordem apos remover 20: ");
-    avlEmOrdem(raiz);
-    printf("\n");
-
-    raiz = avlDestruir(raiz);
-    return 0;
-}

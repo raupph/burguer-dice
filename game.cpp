@@ -14,6 +14,7 @@ void game_init(Game *g) {
     g->is_running = true;
     g->root_avl = NULL;
 
+    // reading order from pedidos.txt
     std::ifstream file("pedidos.txt");
 
     if (!file.is_open()) {
