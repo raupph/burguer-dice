@@ -40,5 +40,7 @@ bool game_remove_ingredient(Game* g);
 bool game_validate_order(Game* g);
 void game_destroy(Game* g);
 void game_print_burguer(Game *g);
+int game_generate_random_number(int min, int max);
+
 
 #endif

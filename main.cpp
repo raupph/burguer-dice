@@ -27,16 +27,19 @@ int main(int argc, char* argv[]) {
     while (game.state != STATE_GAME_OVER) {
         switch (game.state) {
 
-            case STATE_INIT_ORDER:
-                //Mock values for testing
-                list_insertAtEnd(&game.recipe, 'k'); // Ketchup 
-                list_insertAtEnd(&game.recipe, 'a'); // Alface 
-                list_insertAtEnd(&game.recipe, 'q'); // Queijo 
-                list_insertAtEnd(&game.recipe, 'z'); // Pão de cima
-                
-                game.state = STATE_WAIT_ACTION;
+            case STATE_INIT_ORDER: {
+                int curr_recipe_code = game_generate_random_number(1, 837253);
+                NodoAvl *auxNode = avlBuscar(game.root_avl, curr_recipe_code);
 
+                if (auxNode != nullptr) {
+                    for (char c : auxNode->recipe.ingredients) {
+                        list_insertAtEnd(&game.recipe, c);
+                    }
+                }
+
+                game.state = STATE_WAIT_ACTION;
                 break;
+            }
 
             case STATE_WAIT_ACTION:
                 cout << "\n=== BURGUER DICE ===\n";

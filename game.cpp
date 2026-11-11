@@ -3,6 +3,8 @@
 #include <fstream>
 #include <string>
 #include "avl.hpp"
+#include <random>
+
 
 void game_init(Game *g) {
     g->state = STATE_INIT_ORDER;
@@ -14,7 +16,7 @@ void game_init(Game *g) {
     g->is_running = true;
     g->root_avl = NULL;
 
-    // reading order from pedidos.txt
+    //* reading order from pedidos.txt and putting into avl
     std::ifstream file("pedidos.txt");
 
     if (!file.is_open()) {
@@ -79,4 +81,14 @@ void game_print_burguer(Game *g){
     }
 
     std::cout << '\n';
+}
+
+int game_generate_random_number(int min, int max) {
+    // 'static' garante que o motor e a semente sejam inicializados APENAS UMA VEZ.
+    // Isso evita gargalos de performance e garante uma distribuição perfeita.
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    
+    std::uniform_int_distribution<int> distrib(min, max);
+    return distrib(gen);
 }
