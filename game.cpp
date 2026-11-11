@@ -45,8 +45,11 @@ bool game_add_ingredient(Game *g, char ingredient) {
 }
 
 bool game_remove_ingredient(Game *g) {
-    (void)g;
-    return false;
+    if (stack_isEmpty(&g->burger) || (g->burger.top->ingredient == 'p' && g->burger.top->next == nullptr))
+        return false;
+
+    stack_pop(&g->burger);
+    return true;
 }
 
 bool game_validate_order(Game *g) {

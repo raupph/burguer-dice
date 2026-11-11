@@ -87,7 +87,16 @@ int main(int argc, char* argv[]) {
                 break;
 
             case STATE_REMOVE_INGREDIENT:
-                // TODO: Processar a remocao do ingrediente do topo
+                cout << "\nCurrent burger ingredients:\n";
+                game_print_burguer(&game);
+
+                if (game_remove_ingredient(&game)) {
+                    cout << "Ingredient removed successfully.\n";
+                } else {
+                    cout << "No ingredients to remove.\n";
+                }
+
+                game.state = STATE_WAIT_ACTION;
                 break;
 
             case STATE_VALIDATE_ORDER:
