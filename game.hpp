@@ -35,6 +35,7 @@ struct Game {
 };
 
 void game_init(Game* g, const char* pedidos_path, const char* historico_path);
+void game_reset_order(Game* g);
 bool game_add_ingredient(Game* g, char ingredient);
 bool game_remove_ingredient(Game* g);
 bool game_validate_order(Game* g);

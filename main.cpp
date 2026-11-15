@@ -13,6 +13,7 @@
 
 using namespace std;
 
+const int MAX_CUSTOMERS = 3;
 
 int main(int argc, char* argv[]) {
     if (argc < 3) {
@@ -105,19 +106,34 @@ int main(int argc, char* argv[]) {
 
             case STATE_VALIDATE_ORDER:
                 if (game_validate_order(&game)) {
-                    cout << "Order is valid.\n";
+                    cout << "Order is valid. Completing order...\n";
+                    game.state = STATE_ORDER_SUCCESS;
                 } else {
                     cout << "Order is invalid.\n";
+                    game.state = STATE_WAIT_ACTION;
                 }
-                game.state = STATE_WAIT_ACTION;
                 break;
 
             case STATE_ORDER_SUCCESS:
-                // TODO: Tratar sucesso da entrega e chamar proximo cliente
+                game.served_customers++;
+                cout << "Order completed successfully.\n";
+                cout << "Customers served: " << game.served_customers
+                     << "/" << MAX_CUSTOMERS << "\n";
+
+                game_reset_order(&game);
+
+                if (game.served_customers < MAX_CUSTOMERS) {
+                    game.state = STATE_INIT_ORDER;
+                } else {
+                    cout << "All customers were served. You won!\n";
+                    cout << "Final score: " << game.served_customers << "\n";
+                    game.state = STATE_GAME_OVER;
+                }
                 break;
 
             case STATE_GAME_OVER:
-                // TODO: Exibir tela de encerramento do jogo
+                cout << "Game over. Final score: "
+                     << game.served_customers << "\n";
                 break;
 
             default:

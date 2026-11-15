@@ -47,6 +47,16 @@ bool game_add_ingredient(Game *g, char ingredient) {
     return false;
 }
 
+void game_reset_order(Game *g) {
+    while (!stack_isEmpty(&g->burger)) {
+        stack_pop(&g->burger);
+    }
+    stack_initialize(&g->burger);
+
+    list_destroy(&g->recipe);
+    list_initialize(&g->recipe);
+}
+
 bool game_remove_ingredient(Game *g) {
     if (stack_isEmpty(&g->burger) || (g->burger.top->ingredient == 'p' && g->burger.top->next == nullptr))
         return false;
@@ -96,7 +106,8 @@ bool game_validate_order(Game *g) {
 }
 
 void game_destroy(Game *g) {
-    list_destroy(&g->recipe);
+    game_reset_order(g);
+    g->root_avl = avlDestruir(g->root_avl);
     g->is_running = false;
 }
 
