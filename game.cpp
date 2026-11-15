@@ -6,7 +6,9 @@
 #include <random>
 
 
-void game_init(Game *g) {
+void game_init(Game *g, const char *pedidos_path, const char *historico_path) {
+    (void)historico_path;
+
     g->state = STATE_INIT_ORDER;
     stack_initialize(&g->burger);
     list_initialize(&g->recipe);
@@ -16,11 +18,12 @@ void game_init(Game *g) {
     g->is_running = true;
     g->root_avl = NULL;
 
-    //* reading order from pedidos.txt and putting into avl
-    std::ifstream file("pedidos.txt");
+    // Read orders from the pedidos file and store them in the AVL tree.
+    std::ifstream file(pedidos_path);
 
     if (!file.is_open()) {
-        std::cerr << "Erro ao abrir o arquivo!" << std::endl;
+        std::cerr << "Error opening the pedidos file: "
+                  << pedidos_path << std::endl;
         return;
     }
 

@@ -34,7 +34,7 @@ struct Game {
     NodoAvl *root_avl;
 };
 
-void game_init(Game* g);
+void game_init(Game* g, const char* pedidos_path, const char* historico_path);
 bool game_add_ingredient(Game* g, char ingredient);
 bool game_remove_ingredient(Game* g);
 bool game_validate_order(Game* g);
