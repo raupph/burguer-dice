@@ -100,7 +100,12 @@ int main(int argc, char* argv[]) {
                 break;
 
             case STATE_VALIDATE_ORDER:
-                // TODO: Validar se a pilha do hamburguer bate com a receita
+                if (game_validate_order(&game)) {
+                    cout << "Order is valid.\n";
+                } else {
+                    cout << "Order is invalid.\n";
+                }
+                game.state = STATE_WAIT_ACTION;
                 break;
 
             case STATE_ORDER_SUCCESS:

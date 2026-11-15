@@ -53,8 +53,43 @@ bool game_remove_ingredient(Game *g) {
 }
 
 bool game_validate_order(Game *g) {
-    (void)g;
-    return false;
+    Pilha to_compare;
+    stack_initialize(&to_compare);
+    stack_pop(&to_compare);
+
+    /*
+     * Moving the burger to the auxiliary stack reverses it.  Popping the
+     * auxiliary stack therefore reads the burger from bottom to top.
+     */
+    while (!stack_isEmpty(&g->burger)) {
+        stack_push(&to_compare, stack_pop(&g->burger));
+    }
+
+    bool valid = true;
+    NodoLista *recipe_ingredient = g->recipe.head;
+
+    while (!stack_isEmpty(&to_compare)) {
+        char burger_ingredient = stack_pop(&to_compare);
+
+        if (recipe_ingredient == nullptr ||
+            burger_ingredient != recipe_ingredient->ingredient) {
+            valid = false;
+        } else {
+            recipe_ingredient = recipe_ingredient->next;
+        }
+
+        /*
+         * The ingredients are read from bottom to top, so pushing them
+         * directly back reconstructs the original stack exactly.
+         */
+        stack_push(&g->burger, burger_ingredient);
+    }
+
+    if (recipe_ingredient != nullptr) {
+        valid = false;
+    }
+
+    return valid;
 }
 
 void game_destroy(Game *g) {
