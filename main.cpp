@@ -42,9 +42,7 @@ int main(int argc, char* argv[]) {
 
                 //* Check the cache before searching the AVL.
                 Recipe selected_recipe{};
-                bool cache_hit = hashSearch(game.cache,
-                                            current_customer.order_code,
-                                            &selected_recipe);
+                bool cache_hit = hashSearch(game.cache, current_customer.order_code, &selected_recipe);
                 bool recipe_found = cache_hit;
 
                 if (!cache_hit) {
