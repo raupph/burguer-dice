@@ -22,6 +22,7 @@ struct Recipe{
 };
 
 struct NodoAvl;
+struct HashTable;
 
 struct Game {
     GameState state;
@@ -32,6 +33,7 @@ struct Game {
     int served_customers;
     bool is_running;
     NodoAvl *root_avl;
+    HashTable *cache;
 };
 
 void game_init(Game* g, const char* pedidos_path, const char* historico_path);

@@ -1,24 +1,27 @@
 #ifndef HASH_HPP
 #define HASH_HPP
 
-#include "product.hpp"
+#include "game.hpp"
 
-#define HASH_SIZE 100
+#define HASH_SIZE 101
 
-typedef struct str_NodoHash NodoHash;
-
-struct str_NodoHash {
-    NodoHash *next;
-    Product   data;
+struct HashNode {
+    HashNode *next;
+    Recipe recipe;
 };
 
-typedef struct {
-    NodoHash *buckets[HASH_SIZE];
-} HashTable;
+struct HashTable {
+    HashNode *buckets[HASH_SIZE];
+    int size;
+    int entries;
+    int hits;
+    int misses;
+    int collisions;
+};
 
-void    initializeHash(HashTable *table);
-int     insertHash(HashTable *table, Product product);
-Product searchHash(const HashTable *table, int code);
-void    destroyHash(HashTable *table);
+void initializeHash(HashTable *table);
+int hashInsert(HashTable *table, const Recipe& recipe);
+bool hashSearch(HashTable *table, int code, Recipe *recipe);
+void destroyHash(HashTable *table);
 
 #endif

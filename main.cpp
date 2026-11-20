@@ -34,10 +34,24 @@ int main(int argc, char* argv[]) {
 
             case STATE_INIT_ORDER: {
                 int curr_recipe_code = game_generate_random_number(1, 837253);
-                NodoAvl *auxNode = avlBuscar(game.root_avl, curr_recipe_code);
+                Recipe selected_recipe{};
+                bool cache_hit = hashSearch(game.cache, curr_recipe_code,
+                                            &selected_recipe);
+                bool recipe_found = cache_hit;
 
-                if (auxNode != nullptr) {
-                    for (char c : auxNode->recipe.ingredients) {
+                if (!cache_hit) {
+                    NodoAvl *auxNode = avlBuscar(game.root_avl, curr_recipe_code);
+                    if (auxNode != nullptr) {
+                        selected_recipe = auxNode->recipe;
+                        recipe_found = true;
+                        if (!hashInsert(game.cache, selected_recipe)) {
+                            cout << "Error inserting the order into the cache.\n";
+                        }
+                    }
+                }
+
+                if (recipe_found) {
+                    for (char c : selected_recipe.ingredients) {
                         list_insertAtEnd(&game.recipe, c);
                     }
                 }

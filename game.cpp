@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include "avl.hpp"
+#include "hash.hpp"
 #include <random>
 
 
@@ -17,6 +18,8 @@ void game_init(Game *g, const char *pedidos_path, const char *historico_path) {
     g->served_customers = 0;
     g->is_running = true;
     g->root_avl = NULL;
+    g->cache = new HashTable;
+    initializeHash(g->cache);
 
     // Read orders from the pedidos file and store them in the AVL tree.
     std::ifstream file(pedidos_path);
@@ -108,6 +111,9 @@ bool game_validate_order(Game *g) {
 void game_destroy(Game *g) {
     game_reset_order(g);
     g->root_avl = avlDestruir(g->root_avl);
+    destroyHash(g->cache);
+    delete g->cache;
+    g->cache = nullptr;
     g->is_running = false;
 }
 
