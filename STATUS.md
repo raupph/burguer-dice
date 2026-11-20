@@ -95,14 +95,20 @@ The current program enters the game action menu directly.
 
 ### Customer queue
 
-The queue is not integrated into the game yet. It still needs to:
+The customer queue is now integrated into the game:
 
-- Create all customers at the beginning of a match.
-- Preserve the arrival order.
-- Serve the customer at the front of the queue.
-- Remove a customer after a successful order.
-- Move the next customer to the front.
-- Replace the temporary `MAX_CUSTOMERS` control.
+- Three customers are created at the beginning of a match.
+- Each customer stores an identifier and an order code.
+- Customers are inserted in arrival order.
+- The front customer's order is loaded through the hash/AVL flow.
+- A successful order removes the front customer.
+- The next customer then becomes the front customer.
+- Victory occurs when the queue becomes empty.
+- The temporary `MAX_CUSTOMERS` control was removed from the game flow.
+
+The customer queue is implemented before customer patience. Patience,
+turn consumption, and defeat caused by patience reaching zero are intentionally
+reserved for a later implementation step.
 
 ### Order selection
 
@@ -126,6 +132,8 @@ The following requirements are still missing:
 - The game must display the current turn and remaining patience.
 - The game must end in defeat when the front customer's patience reaches zero.
 - The score must equal the number of customers served.
+
+This feature will be implemented after the customer queue is integrated.
 
 ### Ingredient preparation and stock
 

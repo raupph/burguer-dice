@@ -6,16 +6,16 @@ void queue_initialize(Fila *queue) {
     queue->back  = nullptr;
 }
 
-int queue_isEmpty(Fila *queue) {
+bool queue_isEmpty(const Fila *queue) {
     return queue->front == nullptr;
 }
 
-int queue_enqueue(Fila *queue, char value) {
+bool queue_enqueue(Fila *queue, Customer customer) {
     NodoFila *newNode = (NodoFila*) malloc(sizeof(NodoFila));
     if (newNode == nullptr)
-        return 0;
+        return false;
 
-    newNode->data = value;
+    newNode->customer = customer;
     newNode->next = nullptr;
 
     if (queue->back != nullptr)
@@ -24,27 +24,36 @@ int queue_enqueue(Fila *queue, char value) {
         queue->front = newNode;      // the queue was empty: new node is also the front
 
     queue->back = newNode;
-    return 1;
+    return true;
 }
 
-int queue_dequeue(Fila *queue, char *removedValue) {
+bool queue_dequeue(Fila *queue, Customer *removed_customer) {
     NodoFila *removed;
 
     if (queue_isEmpty(queue)) // underflow
-        return 0;
+        return false;
 
     removed = queue->front;
-    *removedValue = removed->data;
+    *removed_customer = removed->customer;
     queue->front = removed->next;
 
     if (queue->front == nullptr) // the queue became empty
         queue->back = nullptr;
 
     free(removed);
-    return 1;
+    return true;
 }
 
-int queue_size(Fila *queue) {
+bool queue_front(const Fila *queue, Customer *customer) {
+    if (queue_isEmpty(queue)) {
+        return false;
+    }
+
+    *customer = queue->front->customer;
+    return true;
+}
+
+int queue_size(const Fila *queue) {
     NodoFila *current = queue->front;
     int count = 0;
 
@@ -54,4 +63,16 @@ int queue_size(Fila *queue) {
     }
 
     return count;
+}
+
+void queue_destroy(Fila *queue) {
+    NodoFila *current = queue->front;
+    while (current != nullptr) {
+        NodoFila *next = current->next;
+        free(current);
+        current = next;
+    }
+
+    queue->front = nullptr;
+    queue->back = nullptr;
 }

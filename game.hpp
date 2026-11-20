@@ -32,6 +32,7 @@ struct Game {
     int current_patience;
     int served_customers;
     bool is_running;
+    Fila customers;
     NodoAvl *root_avl;
     HashTable *cache;
 };

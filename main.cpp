@@ -13,9 +13,8 @@
 
 using namespace std;
 
-const int MAX_CUSTOMERS = 3;
-
 int main(int argc, char* argv[]) {
+    //* Require both input file paths.
     if (argc < 3) {
         cerr << "Usage: " << argv[0] << " <pedidos> <historico>\n";
         return 1;
@@ -25,31 +24,45 @@ int main(int argc, char* argv[]) {
     int option = 0;
     char input_ingredient;
 
+    //* Initialize the game and load its data.
     game_init(&game, argv[1], argv[2]);
 
-    
-
+    //* Process the game state machine.
     while (game.state != STATE_GAME_OVER) {
         switch (game.state) {
 
             case STATE_INIT_ORDER: {
-                int curr_recipe_code = game_generate_random_number(1, 837253);
+                //* Get the current customer from the queue.
+                Customer current_customer;
+                if (!queue_front(&game.customers, &current_customer)) {
+                    //* No customers remain.
+                    game.state = STATE_GAME_OVER;
+                    break;
+                }
+
+                //* Check the cache before searching the AVL.
                 Recipe selected_recipe{};
-                bool cache_hit = hashSearch(game.cache, curr_recipe_code,
+                bool cache_hit = hashSearch(game.cache,
+                                            current_customer.order_code,
                                             &selected_recipe);
                 bool recipe_found = cache_hit;
 
                 if (!cache_hit) {
-                    NodoAvl *auxNode = avlBuscar(game.root_avl, curr_recipe_code);
+                    //* Search the AVL on a cache miss.
+                    NodoAvl *auxNode = avlBuscar(game.root_avl,
+                                                 current_customer.order_code);
                     if (auxNode != nullptr) {
+                        //* Copy and cache the found recipe.
                         selected_recipe = auxNode->recipe;
                         recipe_found = true;
+
                         if (!hashInsert(game.cache, selected_recipe)) {
                             cout << "Error inserting the order into the cache.\n";
                         }
                     }
                 }
 
+                //* Load the found recipe into the linked list.
                 if (recipe_found) {
                     for (char c : selected_recipe.ingredients) {
                         list_insertAtEnd(&game.recipe, c);
@@ -119,6 +132,7 @@ int main(int argc, char* argv[]) {
                 break;
 
             case STATE_VALIDATE_ORDER:
+                //* Validate the burger against the recipe.
                 if (game_validate_order(&game)) {
                     cout << "Order is valid. Completing order...\n";
                     game.state = STATE_ORDER_SUCCESS;
@@ -129,14 +143,18 @@ int main(int argc, char* argv[]) {
                 break;
 
             case STATE_ORDER_SUCCESS:
+                //* Complete the order and remove its customer.
                 game.served_customers++;
                 cout << "Order completed successfully.\n";
                 cout << "Customers served: " << game.served_customers
-                     << "/" << MAX_CUSTOMERS << "\n";
+                     << "/" << queue_size(&game.customers) + game.served_customers
+                     << "\n";
 
                 game_reset_order(&game);
+                Customer completed_customer;
+                queue_dequeue(&game.customers, &completed_customer);
 
-                if (game.served_customers < MAX_CUSTOMERS) {
+                if (!queue_isEmpty(&game.customers)) {
                     game.state = STATE_INIT_ORDER;
                 } else {
                     cout << "All customers were served. You won!\n";

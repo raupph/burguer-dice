@@ -1,9 +1,14 @@
 #ifndef FILA_HPP
 #define FILA_HPP
 
+struct Customer {
+    int id;
+    int order_code;
+};
+
 struct NodoFila {
     NodoFila *next;
-    char   data;
+    Customer customer;
 };
 
 typedef struct {
@@ -12,9 +17,11 @@ typedef struct {
 } Fila;
 
 void queue_initialize(Fila *queue);
-int  queue_isEmpty(Fila *queue);
-int  queue_enqueue(Fila *queue, char value);
-int  queue_dequeue(Fila *queue, char *removedValue);
-int  queue_size(Fila *queue);
+bool queue_isEmpty(const Fila *queue);
+bool queue_enqueue(Fila *queue, Customer customer);
+bool queue_dequeue(Fila *queue, Customer *removed_customer);
+bool queue_front(const Fila *queue, Customer *customer);
+int  queue_size(const Fila *queue);
+void queue_destroy(Fila *queue);
 
 #endif

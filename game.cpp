@@ -6,6 +6,7 @@
 #include "hash.hpp"
 #include <random>
 
+static const int CUSTOMERS_PER_GAME = 3;
 
 void game_init(Game *g, const char *pedidos_path, const char *historico_path) {
     (void)historico_path;
@@ -17,6 +18,7 @@ void game_init(Game *g, const char *pedidos_path, const char *historico_path) {
     g->current_patience = 0;
     g->served_customers = 0;
     g->is_running = true;
+    queue_initialize(&g->customers);
     g->root_avl = NULL;
     g->cache = new HashTable;
     initializeHash(g->cache);
@@ -41,6 +43,16 @@ void game_init(Game *g, const char *pedidos_path, const char *historico_path) {
 
     file.close();
 
+    for (int i = 1; i <= CUSTOMERS_PER_GAME; i++) {
+        Customer customer;
+        customer.id = i;
+        customer.order_code = game_generate_random_number(1, 837253);
+        if (!queue_enqueue(&g->customers, customer)) {
+            std::cerr << "Error adding customer " << customer.id
+                      << " to the queue." << std::endl;
+            break;
+        }
+    }
 }
 
 bool game_add_ingredient(Game *g, char ingredient) {
@@ -110,6 +122,7 @@ bool game_validate_order(Game *g) {
 
 void game_destroy(Game *g) {
     game_reset_order(g);
+    queue_destroy(&g->customers);
     g->root_avl = avlDestruir(g->root_avl);
     destroyHash(g->cache);
     delete g->cache;
