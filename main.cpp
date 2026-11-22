@@ -40,6 +40,7 @@ int main(int argc, char* argv[]) {
                     break;
                 }
 
+                //Searching fase
                 //* Check the cache before searching the AVL.
                 Recipe selected_recipe{};
                 bool cache_hit = hashSearch(game.cache, current_customer.order_code, &selected_recipe);
@@ -47,8 +48,7 @@ int main(int argc, char* argv[]) {
 
                 if (!cache_hit) {
                     //* Search the AVL on a cache miss.
-                    NodoAvl *auxNode = avlBuscar(game.root_avl,
-                                                 current_customer.order_code);
+                    NodoAvl *auxNode = avlBuscar(game.root_avl, current_customer.order_code);
                     if (auxNode != nullptr) {
                         //* Copy and cache the found recipe.
                         selected_recipe = auxNode->recipe;
@@ -60,6 +60,7 @@ int main(int argc, char* argv[]) {
                     }
                 }
 
+                //Loading to list fase
                 //* Load the found recipe into the linked list.
                 if (recipe_found) {
                     for (char c : selected_recipe.ingredients) {
@@ -71,11 +72,18 @@ int main(int argc, char* argv[]) {
                 break;
             }
 
-            case STATE_WAIT_ACTION:
+            case STATE_WAIT_ACTION: {
+                Customer front;
+                queue_front(&game.customers, &front);
+
                 cout << "\n=== BURGUER DICE ===\n";
+                cout << "Turn: " << game.current_turn
+                     << " | Customer " << front.id
+                     << " | Patience: " << front.patience << "\n";
+                cout << "Order: " << "\n";
                 cout << "Choose an action:\n";
                 cout << "1 - Add ingredient\n";
-                cout << "2 - Remove ingredient\n";
+                cout << "2 - Remove top ingredient\n";
                 cout << "3 - Validate order\n";
                 cout << "0 - Exit game\n";
                 cout << "Option: ";
@@ -99,34 +107,45 @@ int main(int argc, char* argv[]) {
                         break;
                 }
                 break;
+            }
 
             case STATE_ADD_INGREDIENT:
-                cout << "\nCurrent burger ingredients:\n";
+                cout << "\nCurrent burger:\n";
                 game_print_burguer(&game);
 
                 cout << "\nEnter the ingredient to add:\n";
-                cout << "k - Ketchup\n";
-                cout << "a - Lettuce\n";
-                cout << "q - Cheese\n";
-                cout << "z - Top bun\n";
+                cout << "k - Ketchup | m - Mustard | p - Pickles | a - Lettuce\n";
+                cout << "s - Swiss cheese | q - Cheddar | c - Onion | t - Tomato\n";
+                cout << "n - Meat | o - Fried egg | b - Bacon | z - Top bun\n";
                 cout << "Ingredient: ";
                 cin >> input_ingredient;
-                
+
                 game_add_ingredient(&game, input_ingredient);
-                game.state = STATE_WAIT_ACTION;
+
+                if (!game_consume_turn(&game)) {
+                    cout << "Customer ran out of patience! Game over.\n";
+                    game.state = STATE_GAME_OVER;
+                } else {
+                    game.state = STATE_WAIT_ACTION;
+                }
                 break;
 
             case STATE_REMOVE_INGREDIENT:
-                cout << "\nCurrent burger ingredients:\n";
+                cout << "\nCurrent burger:\n";
                 game_print_burguer(&game);
 
                 if (game_remove_ingredient(&game)) {
-                    cout << "Ingredient removed successfully.\n";
+                    cout << "Ingredient removed.\n";
                 } else {
-                    cout << "No ingredients to remove.\n";
+                    cout << "Nothing to remove.\n";
                 }
 
-                game.state = STATE_WAIT_ACTION;
+                if (!game_consume_turn(&game)) {
+                    cout << "Customer ran out of patience! Game over.\n";
+                    game.state = STATE_GAME_OVER;
+                } else {
+                    game.state = STATE_WAIT_ACTION;
+                }
                 break;
 
             case STATE_VALIDATE_ORDER:

@@ -6,8 +6,6 @@
 #include "hash.hpp"
 #include <random>
 
-static const int CUSTOMERS_PER_GAME = 3;
-
 void game_init(Game *g, const char *pedidos_path, const char *historico_path) {
     (void)historico_path;
 
@@ -47,12 +45,25 @@ void game_init(Game *g, const char *pedidos_path, const char *historico_path) {
         Customer customer;
         customer.id = i;
         customer.order_code = game_generate_random_number(1, 837253);
+        customer.patience = MAX_PATIENCE;
         if (!queue_enqueue(&g->customers, customer)) {
             std::cerr << "Error adding customer " << customer.id
                       << " to the queue." << std::endl;
             break;
         }
     }
+}
+
+bool game_consume_turn(Game *g) {
+    g->current_turn++;
+
+    if (g->customers.front == nullptr)
+        return true;
+
+    g->customers.front->customer.patience--;
+    g->current_patience = g->customers.front->customer.patience;
+
+    return g->customers.front->customer.patience > 0;
 }
 
 bool game_add_ingredient(Game *g, char ingredient) {

@@ -6,6 +6,9 @@
 #include "fila.hpp"
 #include <string>
 
+static const int MAX_PATIENCE       = 15;
+static const int CUSTOMERS_PER_GAME = 5;
+
 typedef enum {
     STATE_INIT_ORDER,
     STATE_WAIT_ACTION,
@@ -42,6 +45,7 @@ void game_reset_order(Game* g);
 bool game_add_ingredient(Game* g, char ingredient);
 bool game_remove_ingredient(Game* g);
 bool game_validate_order(Game* g);
+bool game_consume_turn(Game* g);
 void game_destroy(Game* g);
 void game_print_burguer(Game *g);
 int game_generate_random_number(int min, int max);

@@ -4,6 +4,7 @@
 struct Customer {
     int id;
     int order_code;
+    int patience;
 };
 
 struct NodoFila {

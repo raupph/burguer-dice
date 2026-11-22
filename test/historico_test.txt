@@ -1,0 +1,6 @@
+Alice
+10
+Bob
+7
+Carol
+15
