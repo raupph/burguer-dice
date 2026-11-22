@@ -4,7 +4,6 @@
 
 void list_initialize(Lista *list) {
     list->head = nullptr;
-    list_insertAtEnd(list, 'p');
 }
 
 int list_size(const Lista *list) {

@@ -80,7 +80,10 @@ int main(int argc, char* argv[]) {
                 cout << "Turn: " << game.current_turn
                      << " | Customer " << front.id
                      << " | Patience: " << front.patience << "\n";
-                cout << "Order: " << "\n";
+                cout << "Order:  ";
+                game_print_recipe(&game);
+                cout << "Burger: ";
+                game_print_burguer(&game);
                 cout << "Choose an action:\n";
                 cout << "1 - Add ingredient\n";
                 cout << "2 - Remove top ingredient\n";

@@ -44,7 +44,7 @@ void game_init(Game *g, const char *pedidos_path, const char *historico_path) {
     for (int i = 1; i <= CUSTOMERS_PER_GAME; i++) {
         Customer customer;
         customer.id = i;
-        customer.order_code = game_generate_random_number(1, 837253);
+        customer.order_code = game_generate_random_number(MIN_ORDER_CODE, MAX_ORDER_CODE);
         customer.patience = MAX_PATIENCE;
         if (!queue_enqueue(&g->customers, customer)) {
             std::cerr << "Error adding customer " << customer.id
@@ -84,7 +84,7 @@ void game_reset_order(Game *g) {
 }
 
 bool game_remove_ingredient(Game *g) {
-    if (stack_isEmpty(&g->burger) || (g->burger.top->ingredient == 'p' && g->burger.top->next == nullptr))
+    if (stack_isEmpty(&g->burger) || (g->burger.top->ingredient == 'B' && g->burger.top->next == nullptr))
         return false;
 
     stack_pop(&g->burger);
@@ -93,22 +93,20 @@ bool game_remove_ingredient(Game *g) {
 
 bool game_validate_order(Game *g) {
     Pilha to_compare;
-    stack_initialize(&to_compare);
-    stack_pop(&to_compare);
+    to_compare.top = nullptr;
 
-    /*
-     * Moving the burger to the auxiliary stack reverses it.  Popping the
-     * auxiliary stack therefore reads the burger from bottom to top.
-     */
-    while (!stack_isEmpty(&g->burger)) {
+    while (!stack_isEmpty(&g->burger))
         stack_push(&to_compare, stack_pop(&g->burger));
-    }
 
     bool valid = true;
     NodoLista *recipe_ingredient = g->recipe.head;
+    bool first = true;
 
     while (!stack_isEmpty(&to_compare)) {
         char burger_ingredient = stack_pop(&to_compare);
+        stack_push(&g->burger, burger_ingredient);
+
+        if (first) { first = false; continue; } // skip bottom bun
 
         if (recipe_ingredient == nullptr ||
             burger_ingredient != recipe_ingredient->ingredient) {
@@ -116,17 +114,10 @@ bool game_validate_order(Game *g) {
         } else {
             recipe_ingredient = recipe_ingredient->next;
         }
-
-        /*
-         * The ingredients are read from bottom to top, so pushing them
-         * directly back reconstructs the original stack exactly.
-         */
-        stack_push(&g->burger, burger_ingredient);
     }
 
-    if (recipe_ingredient != nullptr) {
+    if (recipe_ingredient != nullptr)
         valid = false;
-    }
 
     return valid;
 }
@@ -141,27 +132,38 @@ void game_destroy(Game *g) {
     g->is_running = false;
 }
 
-void game_print_burguer(Game *g){
-    if (stack_isEmpty(&g->burger) || (g->burger.top->next == nullptr && g->burger.top->ingredient == 'p')) {
+void game_print_recipe(Game *g) {
+    NodoLista *current = g->recipe.head;
+    while (current != nullptr) {
+        std::cout << current->ingredient;
+        current = current->next;
+    }
+    std::cout << '\n';
+}
+
+void game_print_burguer(Game *g) {
+    if (stack_isEmpty(&g->burger) || (g->burger.top->next == nullptr && g->burger.top->ingredient == 'B')) {
         std::cout << "The burger has no added ingredients.\n";
         return;
     }
 
-    Pilha aux_stack;
-    stack_initialize(&aux_stack);
-    stack_pop(&aux_stack);
-
-    while(!stack_isEmpty(&g->burger)) {
-        char ingredient = stack_pop(&g->burger);
-        stack_push(&aux_stack, ingredient);
+    // Use a raw empty stack (no bottom bun) just for reversing.
+    Pilha aux;
+    aux.top = nullptr;
+    while (!stack_isEmpty(&g->burger)){
+        stack_push(&aux, stack_pop(&g->burger));
     }
-
-    while(!stack_isEmpty(&aux_stack)) {
-        char ingredient = stack_pop(&aux_stack);
-        std::cout << ingredient << ' ';
-        stack_push(&g->burger, ingredient);
+    // Print skipping the bottom bun, rebuild original stack.
+    bool first = true;
+    while (!stack_isEmpty(&aux)) {
+        char ing = stack_pop(&aux);
+        stack_push(&g->burger, ing);
+        if(first){ 
+            first = false; 
+            continue; 
+        } // skip bottom bun
+        std::cout << ing << ' ';
     }
-
     std::cout << '\n';
 }
 

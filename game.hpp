@@ -8,6 +8,8 @@
 
 static const int MAX_PATIENCE       = 15;
 static const int CUSTOMERS_PER_GAME = 5;
+static const int MIN_ORDER_CODE     = 1;
+static const int MAX_ORDER_CODE     = 837253;
 
 typedef enum {
     STATE_INIT_ORDER,
@@ -47,6 +49,7 @@ bool game_remove_ingredient(Game* g);
 bool game_validate_order(Game* g);
 bool game_consume_turn(Game* g);
 void game_destroy(Game* g);
+void game_print_recipe(Game* g);
 void game_print_burguer(Game *g);
 int game_generate_random_number(int min, int max);
 

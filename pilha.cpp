@@ -3,7 +3,7 @@
 
 void stack_initialize(Pilha *stack) {
     stack->top = nullptr;
-    stack_push(stack, 'p');
+    stack_push(stack, 'B');
 }
 
 int stack_isEmpty(const Pilha *stack) {
