@@ -4,17 +4,21 @@
 #include <string>
 #include "avl.hpp"
 #include "hash.hpp"
+#include "listacontigua.hpp"
 #include <random>
 
 void game_init(Game *g, const char *pedidos_path, const char *historico_path) {
-    (void)historico_path;
-
-    g->state           = STATE_INIT_ORDER;
-    g->current_turn    = 0;
+    g->state            = STATE_INIT_ORDER;
+    g->current_turn     = 0;
     g->current_patience = 0;
     g->served_customers = 0;
-    g->is_running      = true;
+    g->is_running       = true;
     g->loaded_codes_count = 0;
+    g->historico_path   = historico_path;
+    g->loaded_codes     = new int[MAX_LOADED_ORDERS];
+
+    lc_initialize(&g->history);
+    lc_load(&g->history, historico_path);
 
     stack_initialize(&g->burger);
     list_initialize(&g->recipe);
@@ -233,8 +237,17 @@ void game_destroy(Game *g) {
     g->root_avl = avlDestruir(g->root_avl);
     destroyHash(g->cache);
     delete g->cache;
-    g->cache      = nullptr;
-    g->is_running = false;
+    delete[] g->loaded_codes;
+    lc_destroy(&g->history);
+    g->cache        = nullptr;
+    g->loaded_codes = nullptr;
+    g->is_running   = false;
+}
+
+// Appends the game result to the history list and saves the full list to file.
+void game_save_result(Game *g, const char *player_name) {
+    lc_append(&g->history, player_name, g->served_customers);
+    lc_save(&g->history, g->historico_path);
 }
 
 void game_print_recipe(Game *g) {

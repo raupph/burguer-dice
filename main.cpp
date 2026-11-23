@@ -28,7 +28,8 @@ int main(int argc, char* argv[]) {
     game_init(&game, argv[1], argv[2]);
 
     //* Process the game state machine.
-    while (game.state != STATE_GAME_OVER) {
+    bool running = true;
+    while (running) {
         switch (game.state) {
 
             case STATE_INIT_ORDER: {
@@ -213,10 +214,17 @@ int main(int argc, char* argv[]) {
                 }
                 break;
 
-            case STATE_GAME_OVER:
-                cout << "Game over. Final score: "
-                     << game.served_customers << "\n";
+            case STATE_GAME_OVER: {
+                cout << "Game over. Final score: " << game.served_customers << "\n";
+
+                cout << "Enter your name: ";
+                string player_name;
+                cin >> player_name;
+                game_save_result(&game, player_name.c_str());
+                cout << "Result saved.\n";
+                running = false;
                 break;
+            }
 
             default:
                 break;

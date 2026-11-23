@@ -5,6 +5,7 @@
 #include "lista.hpp"
 #include "fila.hpp"
 #include "heap.hpp"
+#include "listacontigua.hpp"
 #include <string>
 
 static const int MAX_PATIENCE        = 15;
@@ -47,8 +48,12 @@ struct Game {
     HashTable *cache;
 
     // Array of loaded order codes for random selection.
-    int loaded_codes[MAX_LOADED_ORDERS];
-    int loaded_codes_count;
+    int *loaded_codes;
+    int  loaded_codes_count;
+
+    // History of past games, loaded from file at startup.
+    ListaContigua history;
+    const char   *historico_path;
 
     // Perishable stock (min-heap by expiry_turn).
     Heap stock_meat;    // 'n'
@@ -63,6 +68,7 @@ struct Game {
 };
 
 void game_init(Game* g, const char* pedidos_path, const char* historico_path);
+void game_save_result(Game* g, const char* player_name);
 void game_reset_order(Game* g);
 bool game_add_ingredient(Game* g, char ingredient);
 bool game_remove_ingredient(Game* g);

@@ -14,7 +14,7 @@ Spec: INF01203 – Estruturas de Dados, UFRGS, 2026/2 — Trabalho Prático Fina
 | **Fila (FIFO)** | Clientes esperando atendimento | ✅ Feito | Enqueue/dequeue/front/isEmpty/size/destroy implementados e integrados. `Customer` definido em `fila.hpp`. |
 | **Tabela hash** | Cache de pedidos buscados | ✅ Básico | Encadeamento separado, hits/misses/colisões contados. Falta relatório de fator de carga e taxa de acerto no log. |
 | **Heap mínimo** | Estoque de ingredientes perecíveis | ✅ Feito | Min-heap por ingrediente (`n`, `o`, `b`). Inserção com `expiry_turn = turno + validade`. Descarte automático no início de cada turno. `extractMin` consome a unidade mais velha. |
-| **Lista contígua** | Histórico de partidas | ❌ Não implementado | `argv[2]` é recebido mas ignorado. Nenhuma estrutura contígua existe para histórico. |
+| **Lista contígua** | Histórico de partidas | ✅ Feito | Alocação dinâmica com `realloc`. Carrega `historico.txt` na inicialização, appenda nova entrada ao encerrar e grava tudo de volta no arquivo. |
 | **Splay Tree** | Extra opcional (comparação com AVL) | 🟡 Estrutura existe | Módulo presente mas armazena só `int`, não `Recipe`. Não integrado ao jogo. |
 | **Timer** | Medição de tempo | 🟡 Estrutura existe | Arquivos `timer.cpp/hpp` presentes e corretos. Nenhuma medição está sendo feita ainda. |
 
@@ -25,7 +25,7 @@ Spec: INF01203 – Estruturas de Dados, UFRGS, 2026/2 — Trabalho Prático Fina
 | Funcionalidade | Status | Observações |
 |---|:---:|---|
 | Leitura de pedidos via `argv[1]` | ✅ Feito | Carregado na AVL na inicialização. Suporta qualquer nome de arquivo. |
-| Leitura de histórico via `argv[2]` | ❌ Não implementado | Argumento recebido, arquivo nunca aberto. |
+| Leitura de histórico via `argv[2]` | ✅ Feito | Carregado na lista contígua na inicialização. Se arquivo não existir (primeira execução), começa vazio. |
 | Fluxo de estados do jogo | ✅ Feito | INIT_ORDER → WAIT_ACTION → ADD/REMOVE/VALIDATE → ORDER_SUCCESS → GAME_OVER. |
 | Fila de clientes (FIFO) | ✅ Feito | `CUSTOMERS_PER_GAME` clientes enfileirados na inicialização; fila drena corretamente. |
 | Seleção do código do pedido | ✅ Feito | Sorteio usa `MIN_ORDER_CODE`/`MAX_ORDER_CODE` — constantes ajustáveis em `game.hpp`. |
@@ -50,8 +50,8 @@ Spec: INF01203 – Estruturas de Dados, UFRGS, 2026/2 — Trabalho Prático Fina
 | Menu principal (Novo jogo / Como jogar / Histórico) | ❌ Não implementado | Programa entra direto no loop de jogo. |
 | Tela "Como jogar" | ❌ Não implementado | — |
 | Histórico com ordenação (alfabética / pontuação desc.) | ❌ Não implementado | Depende da lista contígua. |
-| Salvar nova entrada no histórico ao encerrar partida | ❌ Não implementado | — |
-| Preservar entradas anteriores ao gravar histórico | ❌ Não implementado | — |
+| Salvar nova entrada no histórico ao encerrar partida | ✅ Feito | `game_save_result` appenda à lista e grava tudo no arquivo. Nome pedido ao jogador ao encerrar. |
+| Preservar entradas anteriores ao gravar histórico | ✅ Feito | `lc_save` reescreve o arquivo completo — entradas anteriores são preservadas. |
 
 ---
 
