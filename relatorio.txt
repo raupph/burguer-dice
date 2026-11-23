@@ -1,0 +1,338 @@
+Universidade Federal do Rio Grande do Sul
+Instituto de Informática
+INF01203 – Estruturas de Dados — 2026/2 – Turma C
+
+Dado Burger
+Relatório do Trabalho Prático Final
+
+Integrante 1: Henrique Raupp Bobsin — 00591163
+
+Porto Alegre, novembro de 2026
+
+────────────────────────────────────────────────────────────────
+
+INSTRUÇÕES GERAIS (remova antes de entregar): bloco removido.
+
+────────────────────────────────────────────────────────────────
+
+1. Introdução
+
+O trabalho implementa o jogo Dado Burger: um jogo de terminal em
+C++ no qual o jogador monta hambúrgueres para uma sequência de
+clientes antes que a paciência deles se esgote. O projeto foi
+desenvolvido individualmente.
+
+Requisitos obrigatórios implementados:
+
+  - Árvore AVL para armazenar e buscar receitas de pedidos
+  - Tabela hash (encadeamento separado) como cache de buscas
+  - Lista encadeada para representar a receita de cada pedido
+  - Pilha (LIFO) para gerenciar a montagem do hambúrguer
+  - Fila (FIFO) para a sequência de clientes
+  - Heap mínimo (um por tipo) para o estoque de ingredientes perecíveis
+  - Lista contígua para o histórico de partidas
+  - MergeSort (por pontuação) e QuickSort (por nome) para ordenação do histórico
+  - Medições de desempenho gravadas em medicoes.log a cada execução
+  - Relatório de desempenho exibido na tela ao encerrar a partida
+
+Todos os requisitos obrigatórios foram implementados.
+
+────────────────────────────────────────────────────────────────
+
+2. O jogo
+
+Uma partida começa com 5 clientes na fila, cada um com um pedido
+sorteado aleatoriamente do arquivo pedidos.txt e com paciência
+inicial de 15 turnos. A cada turno a paciência do cliente da
+frente diminui 1. O jogador executa uma ação por turno:
+
+  - Adicionar ingrediente ao hambúrguer (pilha)
+  - Remover o ingrediente do topo (pilha)
+  - Preparar ingrediente para estoque (heap ou contador)
+  - Validar o pedido (compara pilha com lista da receita)
+
+Ao validar corretamente, o cliente é removido da fila e o próximo
+assume. O jogo termina por vitória (todos os 5 clientes atendidos)
+ou por derrota (paciência de algum cliente chega a zero, ou o
+jogador sai voluntariamente).
+
+Parâmetros adotados e justificativas:
+
+  Paciência (MAX_PATIENCE = 15): permite ao jogador preparar
+  todos os ingredientes perecíveis da receita mais longa (até
+  ~8 ingredientes) com alguma margem para erros.
+
+  Clientes por partida (CUSTOMERS_PER_GAME = 5): mantém a
+  partida curta o suficiente para ser jogável em alguns minutos,
+  sem reduzir o desafio.
+
+  Validade dos perecíveis:
+    carne  (n): 3 turnos — expira rápido, exige atenção ao timing
+    ovo    (o): 2 turnos — mais crítico, deve ser preparado na hora
+    bacon  (b): 3 turnos — igual à carne
+
+  Esses valores foram escolhidos para criar pressão sem tornar o
+  jogo impossível: o jogador tem tempo de preparar e usar o
+  ingrediente no mesmo ciclo se agir imediatamente.
+
+Ingredientes infinitos (k m p a z) não requerem preparo e estão
+sempre disponíveis. Ingredientes perenes (s q c t) requerem um
+turno de preparo mas não expiram. Perecíveis (n o b) requerem
+preparo e expiram após os turnos configurados.
+
+────────────────────────────────────────────────────────────────
+
+3. Estruturas de dados
+
+3.1. AVL
+
+Os pedidos do arquivo pedidos.txt são carregados na AVL na
+inicialização do jogo (game_init em game.cpp). Cada nó armazena
+um struct Recipe com o código inteiro (chave) e a string de
+ingredientes.
+
+Durante a partida, cada novo cliente dispara uma busca na AVL
+pelo código do pedido (avlBuscar em avl.cpp), exceto quando o
+resultado já está em cache (hit na tabela hash).
+
+Adaptações feitas no código fornecido pelo professor:
+
+  - Adicionados três contadores globais em avl.cpp:
+      avl_contador_nos        — incrementado em criarNodo
+      avl_contador_rotacoes   — incrementado em rotDir e rotEsq
+      avl_contador_comparacoes — incrementado em avlBuscar
+    Esses contadores são zerados pelo chamador antes de cada fase
+    (carga ou busca) e lidos após, sem alterar as assinaturas das
+    funções existentes.
+  - O campo Recipe foi adicionado ao NodoAvl no lugar do campo
+    genérico de dados, integrando a estrutura ao domínio do jogo.
+
+3.2. Tabela hash
+
+A tabela hash funciona como cache de pedidos já buscados na AVL,
+evitando buscas repetidas para o mesmo cliente. A política de
+colisão é encadeamento separado (lista encadeada em cada bucket).
+
+Tamanho da tabela (m = 101): valor primo próximo de 100, o que
+minimiza colisões pela distribuição uniforme da função divisão.
+Com no máximo 5 receitas distintas por partida, o fator de carga
+permanece muito abaixo de 1 durante o jogo.
+
+Função de hash: divisão — h(k) = k % m. Simples e eficiente
+para chaves inteiras, e o tamanho primo garante boa dispersão.
+
+Política de cache: não há evicção. A tabela aceita inserções até
+o heap de cada bucket crescer. Como o número de receitas distintas
+por partida é fixo (no máximo 5, igual ao número de clientes),
+a tabela jamais fica cheia na prática.
+
+Adaptações: a função hashDivisao foi internalizada em hash.cpp
+(em vez de depender de hash_algorithms.cpp que não era compilado),
+e os campos hits, misses e collisions foram adicionados ao struct
+HashTable para instrumentação de desempenho.
+
+3.3. Lista encadeada
+
+A receita de cada pedido é carregada em uma lista encadeada
+simples (Lista em lista.hpp), com um nó por ingrediente. A lista
+é percorrida em ordem durante a validação do pedido, comparando
+ingrediente a ingrediente com os elementos da pilha.
+
+A lista é reinicializada a cada novo cliente (game_reset_order),
+descartando os nós do pedido anterior. Nenhuma adaptação
+estrutural foi necessária além do tipo do campo (char ingredient).
+
+3.4. Pilha
+
+A pilha (Pilha em pilha.hpp) gerencia a montagem do hambúrguer.
+Cada push adiciona um ingrediente ao topo; cada pop remove o
+último adicionado (LIFO). O pão de baixo ('B') é inserido
+automaticamente na inicialização e nunca pode ser removido.
+
+A validação do pedido (game_validate_order em game.cpp) inverte
+a pilha em uma pilha auxiliar para percorrê-la de baixo para
+cima, compara ingrediente a ingrediente com a lista encadeada
+da receita, e reconstrói a pilha original simultaneamente.
+
+Adaptação: adicionada verificação em game_add_ingredient que
+bloqueia qualquer push após o pão de cima ('z') ser colocado.
+
+3.5. Fila
+
+A fila (Fila em fila.hpp) mantém a sequência de clientes da
+partida em ordem de atendimento (FIFO). O cliente da frente
+perde paciência a cada turno; quando atendido, é removido com
+queue_dequeue e o próximo passa a ser o cliente ativo.
+
+Nenhuma adaptação foi necessária no código fornecido.
+
+3.6. Heap mínimo
+
+Três heaps mínimos independentes (Heap em heap.hpp) gerenciam o
+estoque de ingredientes perecíveis: um para carne (n), um para
+ovo frito (o) e um para bacon (b). A chave de prioridade é o
+campo expiry_turn do struct Product: o ingrediente que vence
+primeiro fica sempre no topo.
+
+Ao preparar um ingrediente (game_prepare_ingredient), um novo
+Product é inserido com expiry_turn = turno_atual + validade.
+Ao consumir (game_add_ingredient), extractMin retira o exemplar
+mais próximo de vencer. No início de cada turno
+(game_consume_turn), todos os exemplares com expiry_turn <=
+turno_atual são descartados via extractMin em loop, mantendo o
+heap limpo sem percorrer todos os elementos.
+
+Nenhuma adaptação estrutural foi necessária.
+
+3.7. Ordenação do histórico
+
+Dois algoritmos foram implementados para ordenar o histórico:
+
+  MergeSort (opção 1 — por pontuação decrescente): algoritmo
+  estável de complexidade O(n log n) no pior caso. Adequado
+  para a ordenação por score pois preserva a ordem relativa de
+  entradas com pontuação igual. Baseado no código do professor
+  Dennis Balreira (aula 21), sem alterações estruturais.
+
+  QuickSort (opção 2 — por nome alfabético): algoritmo in-place
+  de complexidade média O(n log n). Usa pivô aleatório
+  (quickSortAleatorio) para evitar o pior caso O(n²) em entradas
+  já ordenadas. O particionador foi corrigido para usar strcmp
+  em vez de comparação por score, implementando a ordenação
+  alfabética corretamente.
+
+A ordenação é sempre feita sobre uma cópia independente do array,
+preservando a ordem original no arquivo histórico.txt.
+
+────────────────────────────────────────────────────────────────
+
+4. Medições e análise de desempenho
+
+4.1. AVL — carregamento e buscas
+
+Tabela 1: Métricas da AVL
+
+Métrica                        | pedidos_test.txt (desenv.) | pedidos.txt (final)
+-------------------------------|----------------------------|--------------------
+Número de nós inseridos        | 3                          | 837.253
+Altura da árvore               | 2                          | 20
+Rotações (inserção)            | 1                          | 837.233
+Tempo de carga (s)             | 0,0000455                  | 0,604578
+Total de comparações (buscas)  | —                          | 19
+Média de comparações por busca | —                          | 19
+Tempo total de buscas (s)      | —                          | 0,0000076
+
+Análise:
+
+  Altura: o limite teórico é ceil(1,44 * log2(n)). Para n =
+  837.253, esse limite é 29. A altura obtida foi 20, bem abaixo
+  do limite — confirma que a AVL está balanceada corretamente.
+
+  Rotações: 837.233 rotações para 837.253 inserções significa
+  aproximadamente 1 rotação por inserção. Isso é esperado em
+  inserções sequenciais ou quase-sequenciais (os códigos no
+  arquivo são inteiros crescentes de 1 a 837.253), que geram
+  desequilíbrios constantes corrigidos a cada passo.
+
+  Buscas: média de 19 comparações para n = 837.253. log2(837253)
+  ≈ 19,7, e a altura da árvore é 20 — portanto 19 comparações
+  está dentro do O(log n) esperado.
+
+  Tempo de carga: 0,604 s para 837k inserções é linear no número
+  de nós com constante pequena, compatível com O(n log n) total.
+
+4.2. Tabela hash
+
+As métricas foram coletadas em dois cenários: partida completa
+com pedidos_test.txt (3 receitas, 5 clientes, seed=42) e execução
+de saída imediata com pedidos.txt (837k receitas).
+
+Tabela 2: Estatísticas da tabela hash
+
+Métrica                       | pedidos_test.txt | pedidos.txt
+------------------------------|------------------|------------
+Tamanho da tabela (m)         | 101              | 101
+Entradas ocupadas (n)         | 2                | 1
+Fator de carga (λ = n/m)      | 0,0198           | 0,0099
+Total de hits                 | 2                | 0
+Total de misses               | 2                | 1
+Taxa de acerto (%)            | 50%              | 0%
+Total de colisões (inserções) | 0                | 0
+
+Análise:
+
+  No cenário de desenvolvimento (3 receitas, 5 clientes), o cache
+  atingiu 50% de taxa de acerto: os clientes 3 e 5 pediram receitas
+  já vistas pelos clientes 1 e 2, respectivamente, sendo servidos
+  sem consultar a AVL.
+
+  No cenário final (837k receitas), a probabilidade de dois clientes
+  pedirem a mesma receita em uma partida de 5 clientes é de
+  aproximadamente 1 − (837252/837253)^4 ≈ 0,0005%, tornando o
+  cache praticamente inativo. O benefício do cache seria mais
+  visível em jogos com mais clientes ou conjuntos de receitas menores.
+
+  O fator de carga permanece muito abaixo de 1 em ambos os casos,
+  confirmando que a tabela de tamanho 101 é adequada para o uso.
+  A ausência de colisões em ambos os cenários é esperada dado o
+  baixo fator de carga.
+
+4.3. Ordenação do histórico
+
+Tabela 3: Tempo de ordenação do histórico (MergeSort / QuickSort)
+
+Tamanho do histórico | MergeSort (s) | QuickSort (s)
+---------------------|---------------|---------------
+4 (desenvolvimento)  | 0,000000875   | —
+100.028 (final)      | 0,0099495     | 0,446048
+
+Análise:
+
+  MergeSort: 0,0099 s para 100.028 entradas é compatível com
+  O(n log n) — para n = 100.028, n*log2(n) ≈ 1.700.000
+  operações, o que numa máquina moderna resulta em ~10 ms.
+
+  QuickSort: 0,446 s para o mesmo tamanho é ~45x mais lento que
+  o MergeSort neste caso. O pivô aleatório evita o pior caso,
+  mas a ordenação por nome (strcmp) tem custo por comparação
+  maior que a comparação inteira usada no MergeSort (score).
+  Além disso, o QuickSort não é estável e tem pior localidade
+  de cache que o MergeSort para dados já parcialmente ordenados.
+
+────────────────────────────────────────────────────────────────
+
+5. Conclusão
+
+A principal dificuldade foi integrar as estruturas de dados
+independentes (AVL, hash, pilha, fila, heap, lista) em um fluxo
+de jogo coerente. Cada estrutura foi implementada isoladamente
+nas aulas; conectá-las exigiu definir contratos claros entre
+game.cpp e cada módulo, especialmente para o gerenciamento de
+memória (destruição encadeada em game_destroy) e para as métricas
+não-invasivas (contadores globais que não alteram as assinaturas
+das funções do professor).
+
+O trabalho tornou concreto o que a teoria só mostrava em tabelas:
+uma AVL com 837k nós sendo buscada em 19 comparações é de fato
+O(log n) funcionando, não apenas uma afirmação do livro. A
+diferença entre MergeSort e QuickSort também ficou evidente na
+prática — algoritmos teoricamente equivalentes podem diferir
+em 45x dependendo do tipo de comparação e dos dados.
+
+Uso de inteligência artificial:
+
+  Ferramentas de IA foram utilizadas nas seguintes partes do
+  projeto:
+
+  - Criação dos menus e mensagens de saída (cout) em português
+  - Revisão de código e lógica das funções implementadas
+  - Escrita de comentários no código
+  - Implementação da lógica de número aleatório em C++
+    (std::mt19937 com std::random_device)
+  - Leitura e escrita de arquivos (pedidos.txt, historico.txt,
+    medicoes.log)
+  - Auxílio na implementação da seção de medições de desempenho
+    (instrumentação com Timer, contadores globais e game_save_log)
+
+  Todo o código gerado com auxílio de IA foi revisado,
+  compreendido e integrado pelo aluno.
