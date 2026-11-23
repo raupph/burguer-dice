@@ -50,11 +50,11 @@ static void trocar(HistoryEntry *a, HistoryEntry *b) {
 }
 
 static int particionar(HistoryEntry *a, int esq, int dir) {
-    int pivo = a[dir].score;
+    HistoryEntry *pivo = &a[dir];
     int i = esq - 1;
 
-    for (int j = esq; j < dir; j++) {
-        if (a[j].score >= pivo) {
+    for(int j = esq; j < dir; j++) {
+        if(strcmp(a[j].name, pivo->name) <= 0) {
             i++;
             trocar(&a[i], &a[j]);
         }
