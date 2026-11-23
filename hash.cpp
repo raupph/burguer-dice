@@ -1,13 +1,8 @@
 #include <new>
 #include "hash.hpp"
-#include "hash_algorithms.hpp"
 
-/*
- * Adapted from the professor's hashDivisao function.
- * The cache uses separate chaining, as in TabelaEnc.
- */
 static int hashDivision(int key, int table_size) {
-    return hashDivisao(key, table_size);
+    return key % table_size;
 }
 
 void initializeHash(HashTable *table) {

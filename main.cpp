@@ -1,31 +1,28 @@
-#include <cstdio>
 #include <cstdlib>
 #include <iostream>
 #include "lista.hpp"
-#include "pilha.hpp"
 #include "fila.hpp"
 #include "avl.hpp"
 #include "hash.hpp"
-#include "heap.hpp"
-#include "timer.hpp"
 #include "game.hpp"
-#include "lista.hpp"
+#include "menu.hpp"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    //* Require both input file paths.
     if (argc < 3) {
         cerr << "Usage: " << argv[0] << " <pedidos> <historico>\n";
         return 1;
     }
-    
+
     Game game;
+    game_init(&game, argv[1], argv[2]);
+
     int option = 0;
     char input_ingredient;
 
-    //* Initialize the game and load its data.
-    game_init(&game, argv[1], argv[2]);
+    //* Show main menu before starting. Returns when the player chooses Play.
+    show_menu(&game);
 
     //* Process the game state machine.
     bool running = true;
@@ -77,22 +74,22 @@ int main(int argc, char* argv[]) {
                 Customer front;
                 queue_front(&game.customers, &front);
 
-                cout << "\n=== BURGUER DICE ===\n";
-                cout << "Turn: " << game.current_turn
-                     << " | Customer " << front.id
-                     << " | Patience: " << front.patience << "\n";
-                cout << "Order:  ";
+                cout << "\n=== DADO BURGER ===\n";
+                cout << "Turno: " << game.current_turn
+                     << " | Cliente " << front.id
+                     << " | Paciencia: " << front.patience << "\n";
+                cout << "Pedido:    ";
                 game_print_recipe(&game);
-                cout << "Burger: ";
+                cout << "Hamburguer: ";
                 game_print_burguer(&game);
                 game_print_stock(&game);
-                cout << "Choose an action:\n";
-                cout << "1 - Add ingredient\n";
-                cout << "2 - Remove top ingredient\n";
-                cout << "3 - Validate order\n";
-                cout << "4 - Prepare ingredient\n";
-                cout << "0 - Exit game\n";
-                cout << "Option: ";
+                cout << "Escolha uma acao:\n";
+                cout << "1 - Adicionar ingrediente\n";
+                cout << "2 - Remover ingrediente do topo\n";
+                cout << "3 - Validar pedido\n";
+                cout << "4 - Preparar ingrediente\n";
+                cout << "0 - Sair do jogo\n";
+                cout << "Opcao: ";
                 cin >> option;
 
                 switch (option) {
@@ -112,31 +109,31 @@ int main(int argc, char* argv[]) {
                         game.state = STATE_GAME_OVER;
                         break;
                     default:
-                        cout << "Invalid option.\n";
+                        cout << "Opcao invalida.\n";
                         break;
                 }
                 break;
             }
 
             case STATE_ADD_INGREDIENT:
-                cout << "\nCurrent burger:\n";
+                cout << "\nHamburguer atual:\n";
                 game_print_burguer(&game);
 
-                cout << "\nEnter the ingredient to add:\n";
-                cout << "k - Ketchup | m - Mustard | p - Pickles | a - Lettuce\n";
-                cout << "s - Swiss cheese | q - Cheddar | c - Onion | t - Tomato\n";
-                cout << "n - Meat | o - Fried egg | b - Bacon | z - Top bun\n";
-                cout << "Ingredient: ";
+                cout << "\nDigite o ingrediente a adicionar:\n";
+                cout << "k - Ketchup | m - Mostarda | p - Picles | a - Alface\n";
+                cout << "s - Queijo suico | q - Cheddar | c - Cebola | t - Tomate\n";
+                cout << "n - Carne | o - Ovo frito | b - Bacon | z - Pao de cima\n";
+                cout << "Ingrediente: ";
                 cin >> input_ingredient;
 
                 if (!game_add_ingredient(&game, input_ingredient)) {
-                    cout << "Not enough stock for that ingredient.\n";
+                    cout << "Sem estoque desse ingrediente.\n";
                     game.state = STATE_WAIT_ACTION;
                     break;
                 }
 
                 if (!game_consume_turn(&game)) {
-                    cout << "Customer ran out of patience! Game over.\n";
+                    cout << "O cliente perdeu a paciencia! Fim de jogo.\n";
                     game.state = STATE_GAME_OVER;
                 } else {
                     game.state = STATE_WAIT_ACTION;
@@ -144,17 +141,17 @@ int main(int argc, char* argv[]) {
                 break;
 
             case STATE_REMOVE_INGREDIENT:
-                cout << "\nCurrent burger:\n";
+                cout << "\nHamburguer atual:\n";
                 game_print_burguer(&game);
 
                 if (game_remove_ingredient(&game)) {
-                    cout << "Ingredient removed.\n";
+                    cout << "Ingrediente removido.\n";
                 } else {
-                    cout << "Nothing to remove.\n";
+                    cout << "Nada para remover.\n";
                 }
 
                 if (!game_consume_turn(&game)) {
-                    cout << "Customer ran out of patience! Game over.\n";
+                    cout << "O cliente perdeu a paciencia! Fim de jogo.\n";
                     game.state = STATE_GAME_OVER;
                 } else {
                     game.state = STATE_WAIT_ACTION;
@@ -162,20 +159,21 @@ int main(int argc, char* argv[]) {
                 break;
 
             case STATE_PREPARE_INGREDIENT: {
-                cout << "\nWhich ingredient do you want to prepare?\n";
-                cout << "n - Meat | o - Fried egg | b - Bacon\n";
-                cout << "s - Swiss cheese | q - Cheddar | c - Onion | t - Tomato\n";
-                cout << "Ingredient: ";
+                cout << "\nQual ingrediente deseja preparar?\n";
+                cout << "n - Carne | o - Ovo frito | b - Bacon\n";
+                cout << "s - Queijo suico | q - Cheddar | c - Cebola | t - Tomate\n";
+                cout << "Ingrediente: ";
                 cin >> input_ingredient;
 
-                if (game_prepare_ingredient(&game, input_ingredient)) {
-                    cout << "Ingredient prepared.\n";
-                } else {
-                    cout << "Invalid ingredient to prepare.\n";
+                if (!game_prepare_ingredient(&game, input_ingredient)) {
+                    cout << "Ingrediente invalido para preparar.\n";
+                    game.state = STATE_WAIT_ACTION;
+                    break;
                 }
+                cout << "Ingrediente preparado.\n";
 
                 if (!game_consume_turn(&game)) {
-                    cout << "Customer ran out of patience! Game over.\n";
+                    cout << "O cliente perdeu a paciencia! Fim de jogo.\n";
                     game.state = STATE_GAME_OVER;
                 } else {
                     game.state = STATE_WAIT_ACTION;
@@ -184,21 +182,19 @@ int main(int argc, char* argv[]) {
             }
 
             case STATE_VALIDATE_ORDER:
-                //* Validate the burger against the recipe.
                 if (game_validate_order(&game)) {
-                    cout << "Order is valid. Completing order...\n";
+                    cout << "Pedido correto! Concluindo atendimento...\n";
                     game.state = STATE_ORDER_SUCCESS;
                 } else {
-                    cout << "Order is invalid.\n";
+                    cout << "Pedido incorreto.\n";
                     game.state = STATE_WAIT_ACTION;
                 }
                 break;
 
             case STATE_ORDER_SUCCESS:
-                //* Complete the order and remove its customer.
                 game.served_customers++;
-                cout << "Order completed successfully.\n";
-                cout << "Customers served: " << game.served_customers
+                cout << "Pedido concluido com sucesso!\n";
+                cout << "Clientes atendidos: " << game.served_customers
                      << "/" << CUSTOMERS_PER_GAME << "\n";
 
                 game_reset_order(&game);
@@ -208,20 +204,20 @@ int main(int argc, char* argv[]) {
                 if (!queue_isEmpty(&game.customers)) {
                     game.state = STATE_INIT_ORDER;
                 } else {
-                    cout << "All customers were served. You won!\n";
-                    cout << "Final score: " << game.served_customers << "\n";
+                    cout << "Todos os clientes foram atendidos. Voce venceu!\n";
+                    cout << "Pontuacao final: " << game.served_customers << "\n";
                     game.state = STATE_GAME_OVER;
                 }
                 break;
 
             case STATE_GAME_OVER: {
-                cout << "Game over. Final score: " << game.served_customers << "\n";
+                cout << "Fim de jogo. Pontuacao final: " << game.served_customers << "\n";
 
-                cout << "Enter your name: ";
+                cout << "Digite seu nome: ";
                 string player_name;
                 cin >> player_name;
                 game_save_result(&game, player_name.c_str());
-                cout << "Result saved.\n";
+                cout << "Resultado salvo.\n";
                 running = false;
                 break;
             }

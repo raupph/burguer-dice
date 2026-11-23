@@ -109,6 +109,10 @@ bool game_consume_turn(Game *g) {
 // Perenes (s q c t) decrement their counter.
 // Returns false if stock is empty or the ingredient is unknown.
 bool game_add_ingredient(Game *g, char ingredient) {
+    // Cannot add anything on top of the top bun.
+    if (!stack_isEmpty(&g->burger) && g->burger.top->ingredient == 'z')
+        return false;
+
     switch (ingredient) {
         case 'k':
         case 'm':
@@ -264,7 +268,7 @@ void game_print_recipe(Game *g) {
 void game_print_burguer(Game *g) {
     if (stack_isEmpty(&g->burger) ||
         (g->burger.top->next == nullptr && g->burger.top->ingredient == 'B')) {
-        std::cout << "The burger has no added ingredients.\n";
+        std::cout << "O hamburguer nao tem ingredientes ainda.\n";
         return;
     }
 
@@ -326,14 +330,14 @@ bool game_prepare_ingredient(Game *g, char ingredient) {
 }
 
 void game_print_stock(Game *g) {
-    std::cout << "Stock:\n";
-    std::cout << "  n (meat)     " << g->stock_meat.size  << "\n";
-    std::cout << "  o (egg)      " << g->stock_egg.size   << "\n";
-    std::cout << "  b (bacon)    " << g->stock_bacon.size << "\n";
-    std::cout << "  s (swiss)    " << g->stock_swiss      << "\n";
-    std::cout << "  q (cheddar)  " << g->stock_cheddar    << "\n";
-    std::cout << "  c (onion)    " << g->stock_onion      << "\n";
-    std::cout << "  t (tomato)   " << g->stock_tomato     << "\n";
+    std::cout << "Estoque:\n";
+    std::cout << "  n (carne)        " << g->stock_meat.size  << "\n";
+    std::cout << "  o (ovo frito)    " << g->stock_egg.size   << "\n";
+    std::cout << "  b (bacon)        " << g->stock_bacon.size << "\n";
+    std::cout << "  s (queijo suico) " << g->stock_swiss      << "\n";
+    std::cout << "  q (cheddar)      " << g->stock_cheddar    << "\n";
+    std::cout << "  c (cebola)       " << g->stock_onion      << "\n";
+    std::cout << "  t (tomate)       " << g->stock_tomato     << "\n";
 }
 
 int game_generate_random_number(int min, int max) {

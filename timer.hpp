@@ -3,8 +3,8 @@
 
 #include <chrono>
 
-struct Timer { std::chrono::steady_clock::time_point start; };
-void timerStart(Timer *timer);
-double timerStop(Timer *timer); /* returns time in seconds */
+struct Timer { std::chrono::steady_clock::time_point inicio; };
+void   timer_iniciar(Timer *t);
+double timer_parar(Timer *t); /* retorna tempo em segundos */
 
 #endif
