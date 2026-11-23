@@ -23,19 +23,20 @@ void show_how_to_play() {
 }
 
 void show_history(Game *game) {
-    if (game->history.size == 0) {
+    if(game->history.size == 0) {
         cout << "\nNenhuma partida registrada ainda.\n";
         return;
     }
 
     // Sort a copy so the original list and file are never modified.
     HistoryEntry *copy = (HistoryEntry *) malloc(game->history.size * sizeof(HistoryEntry));
-    if (copy == nullptr){
+    if(copy == nullptr){
         return;
     }
 
-    for (int i = 0; i < game->history.size; i++)
+    for (int i = 0; i < game->history.size; i++){
         copy[i] = game->history.data[i];
+    }
 
     cout << "\nOrdenar por:\n";
     cout << "1 - Pontuacao (decrescente)\n";
@@ -63,12 +64,18 @@ void show_history(Game *game) {
 
     cout << "\n--- Historico (" << game->history.size << " entradas) ---\n";
 
-    int limit = game->history.size < 20 ? game->history.size : 20;
-    for (int i = 0; i < limit; i++)
-        cout << (i + 1) << ". " << copy[i].name << " - " << copy[i].score << "\n";
+    int limit = 20;
+    if (game->history.size < 20){
+        limit = game->history.size;
+    }
 
-    if (game->history.size > 20)
+    for(int i = 0; i < limit; i++) {
+        cout << (i + 1) << ". " << copy[i].name << " - " << copy[i].score << "\n";
+    }
+
+    if(game->history.size > 20){
         cout << "... e mais " << (game->history.size - 20) << " entradas.\n";
+    }
 
     cout << "Tempo de ordenacao: " << elapsed << " s\n";
 
@@ -79,7 +86,7 @@ void show_menu(Game *game) {
     int option = 0;
     bool quit  = false;
 
-    while (!quit) {
+    while(!quit) {
         cout << "\n=== DADO BURGER ===\n";
         cout << "1 - Novo jogo\n";
         cout << "2 - Como jogar\n";
