@@ -13,7 +13,7 @@ Spec: INF01203 – Estruturas de Dados, UFRGS, 2026/2 — Trabalho Prático Fina
 | **Pilha** | Montagem do hambúrguer | ✅ Feito | Push/pop/isEmpty implementados. Pão de baixo (`B`) pré-inserido e nunca removível. Fix: `p` era confundido com picles. |
 | **Fila (FIFO)** | Clientes esperando atendimento | ✅ Feito | Enqueue/dequeue/front/isEmpty/size/destroy implementados e integrados. `Customer` definido em `fila.hpp`. |
 | **Tabela hash** | Cache de pedidos buscados | ✅ Básico | Encadeamento separado, hits/misses/colisões contados. Falta relatório de fator de carga e taxa de acerto no log. |
-| **Heap mínimo** | Estoque de ingredientes perecíveis | ❌ Incompleto | `insertHeap` e `extractMax` são stubs vazios. `Product` não modela turno de vencimento. Heaps separados por ingrediente ainda não existem. |
+| **Heap mínimo** | Estoque de ingredientes perecíveis | ✅ Feito | Min-heap por ingrediente (`n`, `o`, `b`). Inserção com `expiry_turn = turno + validade`. Descarte automático no início de cada turno. `extractMin` consome a unidade mais velha. |
 | **Lista contígua** | Histórico de partidas | ❌ Não implementado | `argv[2]` é recebido mas ignorado. Nenhuma estrutura contígua existe para histórico. |
 | **Splay Tree** | Extra opcional (comparação com AVL) | 🟡 Estrutura existe | Módulo presente mas armazena só `int`, não `Recipe`. Não integrado ao jogo. |
 | **Timer** | Medição de tempo | 🟡 Estrutura existe | Arquivos `timer.cpp/hpp` presentes e corretos. Nenhuma medição está sendo feita ainda. |
@@ -36,10 +36,10 @@ Spec: INF01203 – Estruturas de Dados, UFRGS, 2026/2 — Trabalho Prático Fina
 | Derrota por paciência zerada | ✅ Feito | `game_consume_turn` retorna `false` quando paciência chega a 0; jogo vai para `STATE_GAME_OVER`. |
 | Vitória ao atender todos os clientes | ✅ Feito | Detectada quando a fila fica vazia após `STATE_ORDER_SUCCESS`. |
 | Exibição do pedido e hambúrguer | ✅ Feito | `game_print_recipe` e `game_print_burguer` chamadas no `STATE_WAIT_ACTION`. Pão de baixo não aparece na exibição. |
-| Preparação de ingredientes (ação separada) | ❌ Não implementado | Jogador adiciona diretamente sem etapa de preparo. |
-| Estoque de ingredientes (infinito / perene / perecível) | ❌ Não implementado | Nenhum controle de estoque existe. Qualquer caractere é aceito. |
-| Descarte automático de perecíveis vencidos | ❌ Não implementado | Depende do heap e do controle de estoque. |
-| Exibição do estoque | ❌ Não implementado | — |
+| Preparação de ingredientes (ação separada) | ✅ Feito | `game_prepare_ingredient` adiciona ao heap (perecível) ou incrementa contador (perene). Opção 4 no menu. Consome 1 turno. |
+| Estoque de ingredientes (infinito / perene / perecível) | ✅ Feito | Sem estoque: `k m p a z`. Perenes com contador: `s q c t`. Perecíveis com heap: `n o b`. `game_add_ingredient` verifica estoque antes de empilhar. |
+| Descarte automático de perecíveis vencidos | ✅ Feito | No início de cada turno, `game_consume_turn` descarta itens com `expiry_turn < current_turn` de cada heap. |
+| Exibição do estoque | ✅ Feito | `game_print_stock` exibe contagem de cada ingrediente no `STATE_WAIT_ACTION`. |
 
 ---
 

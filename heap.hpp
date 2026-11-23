@@ -12,7 +12,7 @@ typedef struct {
 
 void initializeHeap(Heap *heap);
 int  insertHeap(Heap *heap, Product product);
-int  extractMax(Heap *heap, Product *removed);
+int  extractMin(Heap *heap, Product *removed);
 void destroyHeap(Heap *heap);
 
 #endif
