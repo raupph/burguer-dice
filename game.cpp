@@ -5,6 +5,7 @@
 #include "avl.hpp"
 #include "hash.hpp"
 #include "listacontigua.hpp"
+#include "timer.hpp"
 #include <random>
 
 void game_init(Game *g, const char *pedidos_path, const char *historico_path) {
@@ -16,6 +17,16 @@ void game_init(Game *g, const char *pedidos_path, const char *historico_path) {
     g->loaded_codes_count = 0;
     g->historico_path   = historico_path;
     g->loaded_codes     = new int[MAX_LOADED_ORDERS];
+
+    // Init metrics
+    g->avl_nos_inseridos    = 0;
+    g->avl_rotacoes_carga   = 0;
+    g->avl_altura_final     = 0;
+    g->avl_tempo_carga      = 0.0;
+    g->avl_total_buscas     = 0;
+    g->avl_total_comparacoes = 0;
+    g->avl_tempo_buscas     = 0.0;
+    g->sort_tempo_ultimo    = 0.0;
 
     lc_initialize(&g->history);
     lc_load(&g->history, historico_path);
@@ -46,6 +57,14 @@ void game_init(Game *g, const char *pedidos_path, const char *historico_path) {
         return;
     }
 
+    // Zero AVL counters before load, then time the insertion loop.
+    avl_contador_nos        = 0;
+    avl_contador_rotacoes   = 0;
+    avl_contador_comparacoes = 0;
+
+    Timer t;
+    timer_iniciar(&t);
+
     Recipe curr_recipe;
     std::string code_str;
 
@@ -56,6 +75,12 @@ void game_init(Game *g, const char *pedidos_path, const char *historico_path) {
         if (g->loaded_codes_count < MAX_LOADED_ORDERS)
             g->loaded_codes[g->loaded_codes_count++] = curr_recipe.code;
     }
+
+    g->avl_tempo_carga    = timer_parar(&t);
+    g->avl_nos_inseridos  = avl_contador_nos;
+    g->avl_rotacoes_carga = avl_contador_rotacoes;
+    // spec: empty=0, root-only=1, so add 1 to our internal -1-based height
+    g->avl_altura_final   = avlAltura(g->root_avl) + 1;
 
     file.close();
 
@@ -345,4 +370,56 @@ int game_generate_random_number(int min, int max) {
     static std::mt19937 gen(rd());
     std::uniform_int_distribution<int> distrib(min, max);
     return distrib(gen);
+}
+
+static void print_report_body(Game *g, std::ostream &out) {
+    double media_comp = 0.0;
+    if(g->avl_total_buscas > 0) {
+        media_comp = (double)g->avl_total_comparacoes / g->avl_total_buscas;
+    }
+
+    double taxa_acerto = 0.0;
+    int total_acessos = g->cache->hits + g->cache->misses;
+    if(total_acessos > 0) {
+        taxa_acerto = 100.0 * g->cache->hits / total_acessos;
+    }
+
+    double fator_carga = (double)g->cache->entries / HASH_SIZE;
+
+    out << "\n=== RELATORIO DE DESEMPENHO ===\n";
+    out << "\n--- AVL: carregamento ---\n";
+    out << "  Nos inseridos:        " << g->avl_nos_inseridos  << "\n";
+    out << "  Altura da arvore:     " << g->avl_altura_final   << "\n";
+    out << "  Rotacoes (insercao):  " << g->avl_rotacoes_carga << "\n";
+    out << "  Tempo de carga:       " << g->avl_tempo_carga    << " s\n";
+    out << "\n--- AVL: buscas durante a partida ---\n";
+    out << "  Total de buscas:      " << g->avl_total_buscas       << "\n";
+    out << "  Total de comparacoes: " << g->avl_total_comparacoes  << "\n";
+    out << "  Media por busca:      " << media_comp                << "\n";
+    out << "  Tempo total buscas:   " << g->avl_tempo_buscas       << " s\n";
+    out << "\n--- Tabela hash (cache) ---\n";
+    out << "  Hits:                 " << g->cache->hits       << "\n";
+    out << "  Misses:               " << g->cache->misses     << "\n";
+    out << "  Taxa de acerto:       " << taxa_acerto          << " %\n";
+    out << "  Fator de carga:       " << fator_carga          << "\n";
+    out << "  Colisoes:             " << g->cache->collisions << "\n";
+    out << "\n--- Historico (lista contigua) ---\n";
+    out << "  Entradas carregadas:  " << g->history.size      << "\n";
+    out << "  Tempo ultimo sort:    " << g->sort_tempo_ultimo  << " s\n";
+    out << "================================\n";
+}
+
+void game_print_report(Game *g) {
+    print_report_body(g, std::cout);
+}
+
+void game_save_log(Game *g, const char *player_name) {
+    std::ofstream log("medicoes.log");
+    if (!log.is_open()) {
+        std::cerr << "Erro ao criar medicoes.log\n";
+        return;
+    }
+    log << "Jogador: " << player_name << "\n";
+    print_report_body(g, log);
+    log.close();
 }

@@ -9,6 +9,11 @@
 #include <stdlib.h>
 #include "avl.hpp"
 
+/* Contadores globais zerados pelo chamador antes de cada operacao */
+int avl_contador_nos        = 0;
+int avl_contador_rotacoes   = 0;
+int avl_contador_comparacoes = 0;
+
 /* ------------------------------------------------------------------ */
 /*  Auxiliares internos                                                 */
 /* ------------------------------------------------------------------ */
@@ -22,6 +27,7 @@ static NodoAvl *criarNodo(Recipe r) {
     n->altura = 0;
     n->esq    = NULL;
     n->dir    = NULL;
+    avl_contador_nos++;
     return n;
 }
 
@@ -55,6 +61,7 @@ int avlFb(const NodoAvl *n) {
  *   T1  T2               T2   T3
  */
 static NodoAvl *rotDir(NodoAvl *y) {
+    avl_contador_rotacoes++;
     NodoAvl *x  = y->esq;
     NodoAvl *T2 = x->dir;
     x->dir = y;
@@ -73,6 +80,7 @@ static NodoAvl *rotDir(NodoAvl *y) {
  *      T2  T3       T1  T2
  */
 static NodoAvl *rotEsq(NodoAvl *x) {
+    avl_contador_rotacoes++;
     NodoAvl *y  = x->dir;
     NodoAvl *T2 = y->esq;
     y->esq = x;
@@ -116,7 +124,8 @@ static NodoAvl *reequilibrar(NodoAvl *raiz) {
 /*  Operacoes publicas                                                  */
 /* ------------------------------------------------------------------ */
 NodoAvl *avlBuscar(NodoAvl *raiz, int code) {
-    if (!raiz)          return NULL;
+    if (!raiz) return NULL;
+    avl_contador_comparacoes++;
     if (code < raiz->recipe.code) return avlBuscar(raiz->esq, code);
     if (code > raiz->recipe.code) return avlBuscar(raiz->dir, code);
     return raiz;

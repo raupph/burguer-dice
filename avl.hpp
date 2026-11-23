@@ -31,4 +31,9 @@ NodoAvl *avlDestruir(NodoAvl *raiz);
 /* Caminhamento em-ordem (imprime em ordem crescente) */
 void     avlEmOrdem(const NodoAvl *raiz);
 
+/* Contadores globais — zerados pelo chamador antes de cada operacao */
+extern int avl_contador_nos;
+extern int avl_contador_rotacoes;
+extern int avl_contador_comparacoes;
+
 #endif /* AVL_H */

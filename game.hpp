@@ -65,6 +65,20 @@ struct Game {
     int stock_cheddar;  // 'q'
     int stock_onion;    // 'c'
     int stock_tomato;   // 't'
+
+    // Performance metrics — AVL load phase
+    int    avl_nos_inseridos;
+    int    avl_rotacoes_carga;
+    int    avl_altura_final;
+    double avl_tempo_carga;   // seconds
+
+    // Performance metrics — AVL search phase (accumulated across all searches)
+    int    avl_total_buscas;
+    int    avl_total_comparacoes;
+    double avl_tempo_buscas;  // seconds
+
+    // Performance metrics — history sort (last sort operation)
+    double sort_tempo_ultimo; // seconds, 0 if never sorted
 };
 
 void game_init(Game* g, const char* pedidos_path, const char* historico_path);
@@ -80,6 +94,8 @@ void game_print_burguer(Game *g);
 void game_print_stock(Game *g);
 bool game_prepare_ingredient(Game* g, char ingredient);
 int  game_generate_random_number(int min, int max);
+void game_print_report(Game *g);
+void game_save_log(Game *g, const char *player_name);
 
 
 #endif

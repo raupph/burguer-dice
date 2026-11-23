@@ -61,6 +61,7 @@ void show_history(Game *game) {
     }
 
     double elapsed = timer_parar(&t);
+    game->sort_tempo_ultimo = elapsed;
 
     cout << "\n--- Historico (" << game->history.size << " entradas) ---\n";
 

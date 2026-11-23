@@ -6,11 +6,12 @@
 #include "hash.hpp"
 #include "game.hpp"
 #include "menu.hpp"
+#include "timer.hpp"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    if (argc < 3) {
+    if(argc < 3) {
         cerr << "Usage: " << argv[0] << " <pedidos> <historico>\n";
         return 1;
     }
@@ -21,47 +22,46 @@ int main(int argc, char* argv[]) {
     int option = 0;
     char input_ingredient;
 
-    //* Show main menu before starting. Returns when the player chooses Play.
     show_menu(&game);
 
-    //* Process the game state machine.
     bool running = true;
-    while (running) {
-        switch (game.state) {
+    while(running) {
+        switch(game.state) {
 
             case STATE_INIT_ORDER: {
-                //* Get the current customer from the queue.
                 Customer current_customer;
-                if (!queue_front(&game.customers, &current_customer)) {
-                    //* No customers remain.
+                if(!queue_front(&game.customers, &current_customer)) {
                     game.state = STATE_GAME_OVER;
                     break;
                 }
 
-                //Searching fase
-                //* Check the cache before searching the AVL.
                 Recipe selected_recipe{};
                 bool cache_hit = hashSearch(game.cache, current_customer.order_code, &selected_recipe);
                 bool recipe_found = cache_hit;
 
-                if (!cache_hit) {
-                    //* Search the AVL on a cache miss.
+                if(!cache_hit) {
+                    avl_contador_comparacoes = 0;
+                    Timer search_timer;
+                    timer_iniciar(&search_timer);
+
                     NodoAvl *auxNode = avlBuscar(game.root_avl, current_customer.order_code);
-                    if (auxNode != nullptr) {
-                        //* Copy and cache the found recipe.
+
+                    game.avl_tempo_buscas      += timer_parar(&search_timer);
+                    game.avl_total_buscas++;
+                    game.avl_total_comparacoes += avl_contador_comparacoes;
+
+                    if(auxNode != nullptr) {
                         selected_recipe = auxNode->recipe;
                         recipe_found = true;
 
-                        if (!hashInsert(game.cache, selected_recipe)) {
-                            cout << "Error inserting the order into the cache.\n";
+                        if(!hashInsert(game.cache, selected_recipe)) {
+                            cout << "Erro ao inserir pedido no cache.\n";
                         }
                     }
                 }
 
-                //Loading to list fase
-                //* Load the found recipe into the linked list.
-                if (recipe_found) {
-                    for (char c : selected_recipe.ingredients) {
+                if(recipe_found) {
+                    for(char c : selected_recipe.ingredients) {
                         list_insertAtEnd(&game.recipe, c);
                     }
                 }
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
                 cout << "Opcao: ";
                 cin >> option;
 
-                switch (option) {
+                switch(option) {
                     case 1:
                         game.state = STATE_ADD_INGREDIENT;
                         break;
@@ -126,13 +126,13 @@ int main(int argc, char* argv[]) {
                 cout << "Ingrediente: ";
                 cin >> input_ingredient;
 
-                if (!game_add_ingredient(&game, input_ingredient)) {
+                if(!game_add_ingredient(&game, input_ingredient)) {
                     cout << "Sem estoque desse ingrediente.\n";
                     game.state = STATE_WAIT_ACTION;
                     break;
                 }
 
-                if (!game_consume_turn(&game)) {
+                if(!game_consume_turn(&game)) {
                     cout << "O cliente perdeu a paciencia! Fim de jogo.\n";
                     game.state = STATE_GAME_OVER;
                 } else {
@@ -144,13 +144,13 @@ int main(int argc, char* argv[]) {
                 cout << "\nHamburguer atual:\n";
                 game_print_burguer(&game);
 
-                if (game_remove_ingredient(&game)) {
+                if(game_remove_ingredient(&game)) {
                     cout << "Ingrediente removido.\n";
                 } else {
                     cout << "Nada para remover.\n";
                 }
 
-                if (!game_consume_turn(&game)) {
+                if(!game_consume_turn(&game)) {
                     cout << "O cliente perdeu a paciencia! Fim de jogo.\n";
                     game.state = STATE_GAME_OVER;
                 } else {
@@ -165,14 +165,14 @@ int main(int argc, char* argv[]) {
                 cout << "Ingrediente: ";
                 cin >> input_ingredient;
 
-                if (!game_prepare_ingredient(&game, input_ingredient)) {
+                if(!game_prepare_ingredient(&game, input_ingredient)) {
                     cout << "Ingrediente invalido para preparar.\n";
                     game.state = STATE_WAIT_ACTION;
                     break;
                 }
                 cout << "Ingrediente preparado.\n";
 
-                if (!game_consume_turn(&game)) {
+                if(!game_consume_turn(&game)) {
                     cout << "O cliente perdeu a paciencia! Fim de jogo.\n";
                     game.state = STATE_GAME_OVER;
                 } else {
@@ -182,7 +182,7 @@ int main(int argc, char* argv[]) {
             }
 
             case STATE_VALIDATE_ORDER:
-                if (game_validate_order(&game)) {
+                if(game_validate_order(&game)) {
                     cout << "Pedido correto! Concluindo atendimento...\n";
                     game.state = STATE_ORDER_SUCCESS;
                 } else {
@@ -201,7 +201,7 @@ int main(int argc, char* argv[]) {
                 Customer completed_customer;
                 queue_dequeue(&game.customers, &completed_customer);
 
-                if (!queue_isEmpty(&game.customers)) {
+                if(!queue_isEmpty(&game.customers)) {
                     game.state = STATE_INIT_ORDER;
                 } else {
                     cout << "Todos os clientes foram atendidos. Voce venceu!\n";
@@ -217,7 +217,11 @@ int main(int argc, char* argv[]) {
                 string player_name;
                 cin >> player_name;
                 game_save_result(&game, player_name.c_str());
-                cout << "Resultado salvo.\n";
+
+                game_print_report(&game);
+                game_save_log(&game, player_name.c_str());
+
+                cout << "Resultado salvo. Log gravado em medicoes.log\n";
                 running = false;
                 break;
             }
