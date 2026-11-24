@@ -9,7 +9,7 @@
 #include <string>
 
 static const int MAX_PATIENCE        = 15;
-static const int CUSTOMERS_PER_GAME  = 5;
+static const int CUSTOMERS_PER_GAME  = 2;
 static const int MAX_LOADED_ORDERS   = 900000;
 // Validity (in turns) of perishable ingredients after preparation.
 static const int VALIDITY_MEAT       = 3;

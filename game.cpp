@@ -134,11 +134,12 @@ bool game_consume_turn(Game *g) {
 // Perenes (s q c t) decrement their counter.
 // Returns false if stock is empty or the ingredient is unknown.
 bool game_add_ingredient(Game *g, char ingredient) {
-    // Cannot add anything on top of the top bun.
+    //* Cannot add anything on top of the top bun.
     if (!stack_isEmpty(&g->burger) && g->burger.top->ingredient == 'z')
         return false;
 
     switch (ingredient) {
+        //* Infinite ingredients
         case 'k':
         case 'm':
         case 'p':
@@ -230,23 +231,24 @@ bool game_remove_ingredient(Game *g) {
 bool game_validate_order(Game *g) {
     Pilha to_compare;
     to_compare.top = nullptr;
-
+    //* Aux stack to compare
     while (!stack_isEmpty(&g->burger))
         stack_push(&to_compare, stack_pop(&g->burger));
 
     bool valid = true;
     NodoLista *recipe_node = g->recipe.head;
     bool first = true;
-
+    //* Building the original stack again
     while (!stack_isEmpty(&to_compare)) {
         char ing = stack_pop(&to_compare);
         stack_push(&g->burger, ing);
 
+        //* Jump the first bun
         if (first) {
             first = false;
             continue; // skip bottom bun
         }
-
+        //* Compere the codes
         if (recipe_node == nullptr || ing != recipe_node->ingredient)
             valid = false;
         else
@@ -296,12 +298,13 @@ void game_print_burguer(Game *g) {
         std::cout << "O hamburguer nao tem ingredientes ainda.\n";
         return;
     }
-
+    //* create aux stack -> reverse original
     Pilha aux;
     aux.top = nullptr;
     while (!stack_isEmpty(&g->burger))
         stack_push(&aux, stack_pop(&g->burger));
 
+    //* Pop the aux to conserve the original and print
     bool first = true;
     while (!stack_isEmpty(&aux)) {
         char ing = stack_pop(&aux);

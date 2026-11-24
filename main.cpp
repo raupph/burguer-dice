@@ -35,6 +35,7 @@ int main(int argc, char* argv[]) {
                     break;
                 }
 
+                //*Taking the recibe from cache
                 Recipe selected_recipe{};
                 bool cache_hit = hashSearch(game.cache, current_customer.order_code, &selected_recipe);
                 bool recipe_found = cache_hit;
@@ -43,13 +44,14 @@ int main(int argc, char* argv[]) {
                     avl_contador_comparacoes = 0;
                     Timer search_timer;
                     timer_iniciar(&search_timer);
-
+                    //*If is not on cache, search at AVL
                     NodoAvl *auxNode = avlBuscar(game.root_avl, current_customer.order_code);
 
                     game.avl_tempo_buscas      += timer_parar(&search_timer);
                     game.avl_total_buscas++;
                     game.avl_total_comparacoes += avl_contador_comparacoes;
 
+                    //*Puts the new recipe at cache
                     if(auxNode != nullptr) {
                         selected_recipe = auxNode->recipe;
                         recipe_found = true;
@@ -59,7 +61,7 @@ int main(int argc, char* argv[]) {
                         }
                     }
                 }
-
+                //* Puts the recipe to the client list
                 if(recipe_found) {
                     for(char c : selected_recipe.ingredients) {
                         list_insertAtEnd(&game.recipe, c);
@@ -71,6 +73,7 @@ int main(int argc, char* argv[]) {
             }
 
             case STATE_WAIT_ACTION: {
+                //* Taking the front constumer
                 Customer front;
                 queue_front(&game.customers, &front);
 
